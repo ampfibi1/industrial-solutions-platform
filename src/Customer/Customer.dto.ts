@@ -11,31 +11,30 @@ import {
 
 export class CustomerDto {
 
-  // Name should not contain numbers
+
   @IsString()
   @Matches(/^[^0-9]*$/, {
-    message: 'Name should not contain numbers',
+    message: 'Name should not contain number',
   })
   name?: string;
 
-  // Password is required
+  
   @IsNotEmpty({
     message: 'Password is required',
   })
 
-  // Password must contain @,#,$,&
+ 
   @Matches(/[@#$&]/, {
     message: 'Password must contain one special character (@,#,$,&)',
   })
   password?: string;
 
-  // Date validation
   @IsDateString({}, {
     message: 'Invalid date',
   })
   dob?: string;
 
-  // URL validation
+
   @IsUrl({}, {
     message: 'Invalid social media URL',
   })

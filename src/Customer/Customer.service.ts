@@ -13,9 +13,6 @@ export class CustomerService{
   }
 
  create(dto: CustomerDto) {
-
-   
-
     return {
       message: 'Customer Created Successfully',
       data: dto,
