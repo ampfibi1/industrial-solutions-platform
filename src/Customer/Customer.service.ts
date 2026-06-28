@@ -14,7 +14,7 @@ export class CustomerService{
 
  create(dto: CustomerDto) {
 
-    // Business logic goes here
+   
 
     return {
       message: 'Customer Created Successfully',
