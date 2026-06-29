@@ -1,13 +1,5 @@
 import { Injectable } from '@nestjs/common';
-
-
-import {
-  IsString,
-  IsNotEmpty,
-  Matches,
-  IsDateString,
-  IsUrl,
-} from 'class-validator';
+import { IsString,IsNotEmpty,Matches,IsDateString,IsUrl } from 'class-validator';
 
 export class CustomerDto {
 
@@ -18,14 +10,12 @@ export class CustomerDto {
   })
   name?: string;
 
-  
   @IsNotEmpty({
     message: 'Password is required',
   })
 
- 
   @Matches(/[@#$&]/, {
-    message: 'Password must contain one special character (@,#,$,&)',
+    message: 'Password must contain one special charactwe',
   })
   password?: string;
 

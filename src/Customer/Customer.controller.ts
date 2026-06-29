@@ -1,6 +1,7 @@
-import {Controller , Post, Body, Get, Param, Query} from '@nestjs/common';
+import {Controller , Post, Body, Get, Param, Query, UsePipes, ValidationPipe} from '@nestjs/common';
 import {CustomerService} from './Customer.service';
 import { CustomerDto } from './Customer.dto';
+
 
 @Controller('customer')
 export class CustomerController {
@@ -28,12 +29,14 @@ export class CustomerController {
 
 
 }
+ 
  @Post()
-  create(
-    @Body() dto: CustomerDto,
-  ) {
-    return this.customerService.create(dto);
-  }
+ @UsePipes(new ValidationPipe())
+    create(@Body() data: CustomerDto){
+       
+        return this.customerService.create(data);
+    }
+
 
 
  @Post('create')

@@ -13,10 +13,10 @@ export class CustomerService{
   }
 
  create(dto: CustomerDto) {
-    return {
-      message: 'Customer Created Successfully',
-      data: dto,
-    };
+      return {
+          message: 'All ok',
+             data: dto,
+          };
 
   }
 
