@@ -12,27 +12,23 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const admin_model_1 = require("./admin/admin.model");
 const typeorm_1 = require("@nestjs/typeorm");
-const admin_entity_1 = require("./admin/admin.entity");
-const category_entity_1 = require("./common/category.entity");
-const company_entity_1 = require("./common/company.entity");
-const user_entity_1 = require("./common/user.entity");
-const admin_company_oversight_entity_1 = require("./admin/entities/admin-company-oversight.entity");
-const product_entity_1 = require("./admin/entities/product.entity");
+const task3_model_1 = require("./admin/task3/task3.model");
+const userinfo_entity_1 = require("./admin/task3/entities/userinfo.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            admin_model_1.AdminModule,
+            admin_model_1.AdminModule, task3_model_1.Task3Module,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: 'localhost',
                 port: 5432,
                 username: 'postgres',
                 password: 'root',
-                database: 'test',
-                entities: [admin_entity_1.Admin, category_entity_1.Category, company_entity_1.Company, user_entity_1.User, admin_company_oversight_entity_1.AdminCompanyOversight, product_entity_1.Product],
+                database: 'task3',
+                entities: [userinfo_entity_1.UserInfo],
                 synchronize: true,
             }),
         ],
