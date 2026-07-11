@@ -19,10 +19,6 @@ export class CustomerService{
           };
 
   }
-
-
-
-
   getCustomer(): object {
     return {
       message: 'Using get routing customer get successfully',
