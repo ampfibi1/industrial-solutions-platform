@@ -3,8 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminModule } from './admin/admin.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Admin } from './admin/admin.entity';
+import { Category } from './common/category.entity';
+import { Company } from './common/company.entity';
+import { User } from './common/user.entity';
+import { AdminCompanyOversight } from './admin/entities/admin-company-oversight.entity';
+import { Product } from './admin/entities/product.entity';
 
 @Module({
   imports: [
@@ -16,7 +20,7 @@ import { Admin } from './admin/admin.entity';
       username: 'postgres',
       password: 'root',
       database: 'test',
-      entities: [Admin],
+      entities: [Admin,Category,Company,User,AdminCompanyOversight,Product],
       synchronize: true,
     }), 
   ],
