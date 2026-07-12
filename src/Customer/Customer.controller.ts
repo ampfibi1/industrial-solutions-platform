@@ -8,7 +8,7 @@ export class CustomerController {
     constructor(private readonly customerService: CustomerService) {}
 
    
-    // also respond to GET /customer (root) so callers can GET /customer without the extra path
+/* also respond to GET /customer (root) so callers can GET /customer without the extra path
   
     @Get('getCustomer')
     getCustomer(): object {
@@ -44,7 +44,12 @@ export class CustomerController {
                    @Body('name')name: string,):object{
         return this.customerService.createCustomer(id, name );
     }
+*/
 
+@Post()
+createUser(@Body() dto: CustomerDto): Promise<CustomerDto> {
+    return this.customerService.createUser(dto);
+}   
 
 
 

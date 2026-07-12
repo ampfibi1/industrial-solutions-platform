@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerDto } from './Customer.dto';
+import { CustomerRepository } from './Customer.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository , MoreThan } from 'typeorm';
+
 
 @Injectable()
 export class CustomerService{
-
-  createCustomer(id: number, name: string): object {
-    return {
-      message: 'Using post routing customer created successfully',
-      id : 3 ,
-      name : 'Mahin',
-    };
-  }
-
+  constructor(@InjectRepository(CustomerRepository) private customerEntity: Repository<CustomerRepository>) {}
+ 
+/*
+ createCustomer()
  create(dto: CustomerDto) {
       return {
           message: 'All ok',
@@ -42,4 +41,20 @@ export class CustomerService{
     };
   } 
 
+*/
+  async createUser(dto: CustomerDto): Promise<CustomerRepository> {
+    const customer = this.customerEntity.create(dto);
+    return this.customerEntity.save(customer);
+  }
+
+  async getuserolderthan(): Promise <CustomerRepository[]> {
+          
+    return this.customerEntity.find({
+        where: {
+        age: MoreThan(40),
+      },
+    });
+
+
+}
 }
