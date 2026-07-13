@@ -1,26 +1,23 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 //import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity("Customer")
-export class CustomerRepository{
-
-
+export class CustomerEntity{
 
 @PrimaryGeneratedColumn({ unsigned: true })
-id: number;
+id?: number;
 
 @Column({ length: 100 })
-fullname: string;
+fullname?: string;
 
 @Column({ unsigned: true })
-age: number;
-
+age?: number;
 
 
 @Column({
     default: 'active',
     enum: ['active', 'inactive'],
     })
-status: 'active'| 'inactive';
+status?: 'active'| 'inactive';
 
 
 }

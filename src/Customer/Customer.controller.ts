@@ -46,15 +46,32 @@ export class CustomerController {
     }
 */
 
+
+
 @Post()
-createUser(@Body() dto: CustomerDto): Promise<CustomerDto> {
+createUser(@Body() dto: CustomerDto) {
     return this.customerService.createUser(dto);
 }   
 
 
+@Post(':id/status')
+changeStatus(
+  @Param('id') id: number,
+  @Body() dto: CustomerDto,
+) {
+  return this.customerService.changeStatus(id, dto.status);
+}
 
 
+@Get('inactive')
+getInactiveUsers() {
+  return this.customerService.getInactiveUsers();
+}
 
+@Get('older')
+getOlderUsers() {
+  return this.customerService.getuserolderthan();
+}
     
 
 }

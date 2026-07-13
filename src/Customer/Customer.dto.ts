@@ -36,13 +36,13 @@ export class CustomerDto {
     message: 'Fullname must be a string',
   }
 )
-fullname?: string;
+fullname: string;
 
 @IsNotEmpty({
     message: 'Age is required',
   })
 age?: number;
 
-
+status: 'active'| 'inactive';
 
 }

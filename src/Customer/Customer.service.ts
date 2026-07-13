@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable ,Param,Body } from '@nestjs/common';
 import { CustomerDto } from './Customer.dto';
-import { CustomerRepository } from './Customer.entity';
+import { CustomerEntity} from './Customer.entity';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository , MoreThan } from 'typeorm';
 
 
 @Injectable()
 export class CustomerService{
-  constructor(@InjectRepository(CustomerRepository) private customerEntity: Repository<CustomerRepository>) {}
+  constructor(@InjectRepository(CustomerEntity) private customerEntity: Repository<CustomerEntity>) {}
  
 /*
  createCustomer()
@@ -42,19 +43,51 @@ export class CustomerService{
   } 
 
 */
-  async createUser(dto: CustomerDto): Promise<CustomerRepository> {
+  async createUser(dto: CustomerDto): Promise<CustomerEntity> {
     const customer = this.customerEntity.create(dto);
     return this.customerEntity.save(customer);
   }
 
-  async getuserolderthan(): Promise <CustomerRepository[]> {
+  async getuserolderthan(): Promise <CustomerEntity[]> {
           
     return this.customerEntity.find({
         where: {
         age: MoreThan(40),
       },
     });
+  }
 
+async changeStatus(
+  id: number,
+  status: 'active' | 'inactive',
+) {
+  await this.customerEntity.update(id, { status });
+
+  return this.customerEntity.findOneBy({ id });
+}
+
+
+async getInactiveUsers() {
+  return this.customerEntity .find({
+    where: {
+      status: 'inactive',
+    },
+  });
 
 }
+
+  
+
+async getUsersOlderThan40() {
+
+  return this.customerEntity.find({
+    where: {
+      age: MoreThan(40),
+    },
+  });
+
+}
+
+
+
 }
