@@ -1,4 +1,4 @@
 export class CreateUserDto{
-    country?:string;
+    country :string | undefined; 
     uniqueId?:string;
 }
