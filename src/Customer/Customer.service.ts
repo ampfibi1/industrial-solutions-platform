@@ -62,17 +62,13 @@ async changeStatus(
   status: 'active' | 'inactive',
 ) {
   await this.customerEntity.update(id, { status });
-
-  return this.customerEntity.findOneBy({ id });
+ return this.customerEntity.findOne({ where: { id },select: { id: true, fullname: true,},});
+ 
 }
 
-
-async getInactiveUsers() {
-  return this.customerEntity .find({
-    where: {
-      status: 'inactive',
-    },
-  });
+async getInactiveUsers() 
+{
+  return this.customerEntity .find({where: {status: 'inactive',}, });
 
 }
 
@@ -80,11 +76,7 @@ async getInactiveUsers() {
 
 async getUsersOlderThan40() {
 
-  return this.customerEntity.find({
-    where: {
-      age: MoreThan(40),
-    },
-  });
+  return this.customerEntity.find({ where: {age: MoreThan(40),},});
 
 }
 
