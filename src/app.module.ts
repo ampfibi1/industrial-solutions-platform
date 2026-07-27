@@ -10,20 +10,34 @@ import { AdminCompanyOversight } from './admin/entities/admin-company-oversight.
 import { Product } from './admin/entities/product.entity';
 import { Task3Module } from './admin/task3/task3.model';
 import { UserInfo } from './admin/task3/entities/userinfo.entity';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal:true}),
     AdminModule,Task3Module,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.DB_HOST,
       port: 5432,
-      username: 'postgres',
-      password: 'root',
-      database: 'task3',
-      entities: [UserInfo],
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
+      entities: [Category,Company,User, AdminCompanyOversight, Product],
       synchronize: true,
     }), 
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      },
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
