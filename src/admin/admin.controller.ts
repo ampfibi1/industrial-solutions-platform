@@ -1,11 +1,21 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Request } from 'express';
 import { AdminService } from "./admin.service";
 import { AdminCat2Dto } from "./task2/adminCat2.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateCompanyDto } from "./dto/create-company.dto";
+import { CreateCategoryDto } from "./create-category.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
 
 @Controller("admin")
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 export class AdminController{
     constructor (private readonly adminService: AdminService) {}
     //practice route
@@ -53,7 +63,48 @@ export class AdminController{
     }
 
     @Delete('users/:id')
-    removeUser(@Param('id', ParseIntPipe) id: number) {
+      removeUser(@Param('id', ParseIntPipe) id: number) {
       return this.adminService.removeUser(id);
     }
+
+
+  @Post('categories')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  createCategory(@Body() dto: CreateCategoryDto) {
+    return this.adminService.createCategory(dto);
+  }
+
+  @Get('categories')
+  findAllCategories() {
+    return this.adminService.findAllCategories();
+  }
+
+
+  @Post('products')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  createProduct(@Body() dto: CreateProductDto, @Req() req: Request & { user?: any }) {
+    const createdById = req.user?.id;
+    return this.adminService.createProduct(dto, createdById);
+  }
+
+  @Get('products')
+  findAllProducts() {
+    return this.adminService.findAllProducts();
+  }
+
+  @Get('products/:id')
+  findOneProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.findOneProduct(id);
+  }
+
+  @Put('products/:id')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  updateProduct(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
+    return this.adminService.updateProduct(id, dto);
+  }
+
+  @Delete('products/:id')
+  removeProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.adminService.removeProduct(id);
+  }  
 }
