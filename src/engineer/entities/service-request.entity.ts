@@ -1,33 +1,57 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+
+import { User } from '../../common/user.entity';
+import { Product } from '../../admin/entities/product.entity';
+
+export enum ServiceStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  RESOLVED = 'RESOLVED',
+  CLOSED = 'CLOSED',
+}
 
 @Entity('service_requests')
 export class ServiceRequest {
 
   @PrimaryGeneratedColumn()
-  id?:number;
+  id?: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'customer_id' })
+  customer?: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'engineer_id' })
+  engineer?: User;
+
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id' })
+  product?: Product;
 
   @Column()
-  customer_id?:number;
-
-  @Column()
-  engineer_id?:number;
-
-  @Column()
-  product_id?:number;
-
-  @Column()
-  description?:string;
+  description?: string;
 
   @Column({
-    type:'enum',
-    enum:['OPEN','IN_PROGRESS','RESOLVED','CLOSED'],
-    default:'OPEN'
+    type: 'enum',
+    enum: ServiceStatus,
+    default: ServiceStatus.OPEN,
   })
-  status?:string;
+  status?: ServiceStatus;
 
   @CreateDateColumn()
-  created_at?:Date;
+  createdAt?: Date;
 
-  @Column({nullable:true})
-  resolved_at?:Date;
+  @UpdateDateColumn()
+  updatedAt?: Date;
+
+  @Column({ nullable: true })
+  resolvedAt?: Date;
 }
