@@ -12,11 +12,14 @@ import { Task3Module } from './admin/task3/task3.model';
 import { UserInfo } from './admin/task3/entities/userinfo.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
+import { EngineerModule } from './engineer/engineer.module';
+import { ServiceRequest } from './engineer/entities/service-request.entity';
+import { EngineerProductExpertise } from './engineer/entities/engineer-product-expertise.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
-    AdminModule,Task3Module,
+    AdminModule,Task3Module, EngineerModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -24,7 +27,7 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      entities: [Category,Company,User, AdminCompanyOversight, Product],
+      entities: [Category,Company,User, AdminCompanyOversight, Product, ServiceRequest, EngineerProductExpertise],
       synchronize: true,
     }), 
     MailerModule.forRoot({
@@ -37,7 +40,7 @@ import { ConfigModule } from '@nestjs/config';
           pass: process.env.MAIL_PASS,
         },
       },
-    })
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

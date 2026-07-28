@@ -20,6 +20,9 @@ const product_entity_1 = require("./admin/entities/product.entity");
 const task3_model_1 = require("./admin/task3/task3.model");
 const mailer_1 = require("@nestjs-modules/mailer");
 const config_1 = require("@nestjs/config");
+const engineer_module_1 = require("./engineer/engineer.module");
+const service_request_entity_1 = require("./engineer/entities/service-request.entity");
+const engineer_product_expertise_entity_1 = require("./engineer/entities/engineer-product-expertise.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,7 +30,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
-            admin_model_1.AdminModule, task3_model_1.Task3Module,
+            admin_model_1.AdminModule, task3_model_1.Task3Module, engineer_module_1.EngineerModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: process.env.DB_HOST,
@@ -35,7 +38,7 @@ exports.AppModule = AppModule = __decorate([
                 username: process.env.DB_USER,
                 password: process.env.DB_PASS,
                 database: process.env.DB_NAME,
-                entities: [category_entity_1.Category, company_entity_1.Company, user_entity_1.User, admin_company_oversight_entity_1.AdminCompanyOversight, product_entity_1.Product],
+                entities: [category_entity_1.Category, company_entity_1.Company, user_entity_1.User, admin_company_oversight_entity_1.AdminCompanyOversight, product_entity_1.Product, service_request_entity_1.ServiceRequest, engineer_product_expertise_entity_1.EngineerProductExpertise],
                 synchronize: true,
             }),
             mailer_1.MailerModule.forRoot({
@@ -48,7 +51,7 @@ exports.AppModule = AppModule = __decorate([
                         pass: process.env.MAIL_PASS,
                     },
                 },
-            })
+            }),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
