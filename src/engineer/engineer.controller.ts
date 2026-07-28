@@ -5,11 +5,13 @@ import {
   Patch,
   Body,
   Param,
+  Delete,
 } from '@nestjs/common';
 
 import { EngineerService } from './engineer.service';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceStatusDto } from './dto/update-service-status.dto';
+import { CreateExpertiseDto } from './dto/create-expertise.dto';
 
 @Controller('engineer')
 export class EngineerController {
@@ -39,15 +41,44 @@ getAssignedRequests(
 }
 
 
-  @Patch('service-request/:id')
-  updateStatus(
-    @Param('id') id: number,
-    @Body() updateServiceStatusDto: UpdateServiceStatusDto,
-  ) {
-    return this.engineerService.updateStatus(
-      id,
-      updateServiceStatusDto,
-    );
-  }
+    @Patch('service-request/:id')
+    updateStatus(
+        @Param('id') id: number,
+        @Body() updateServiceStatusDto: UpdateServiceStatusDto,
+        ) {
+            return this.engineerService.updateStatus(
+                 id,
+                updateServiceStatusDto,
+        );
+    }
+
+    @Post('expertise')
+    createExpertise(
+        @Body() createExpertiseDto: CreateExpertiseDto,
+    ) {
+        return this.engineerService.createExpertise(
+            createExpertiseDto,
+        );
+    }
+
+
+    @Get('expertise/:engineerId')
+    getExpertise(
+        @Param('engineerId') engineerId: string,
+        ) {
+            return this.engineerService.getExpertise(
+                Number(engineerId),
+        );
+    }
+
+
+    @Delete('expertise/:id')
+    deleteExpertise(
+        @Param('id') id: string,
+        ) {
+             return this.engineerService.deleteExpertise(
+                 Number(id),
+        );
+    }
 
 }

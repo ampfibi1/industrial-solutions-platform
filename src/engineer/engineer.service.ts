@@ -5,14 +5,18 @@ import { Repository } from 'typeorm';
 import { ServiceRequest, ServiceStatus } from './entities/service-request.entity';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceStatusDto } from './dto/update-service-status.dto';
-
+import { EngineerProductExpertise } from './entities/engineer-product-expertise.entity';
+import { CreateExpertiseDto } from './dto/create-expertise.dto';
 @Injectable()
 export class EngineerService {
 
   constructor(
     @InjectRepository(ServiceRequest)
-    private readonly serviceRequestRepository: Repository<ServiceRequest>,
-  ) {}
+    private serviceRequestRepository: Repository<ServiceRequest>,
+
+    @InjectRepository(EngineerProductExpertise)
+    private expertiseRepository: Repository<EngineerProductExpertise>,
+    ) {}
 
   async createServiceRequest(
     createServiceRequestDto: CreateServiceRequestDto,
@@ -78,5 +82,26 @@ export class EngineerService {
 
     return await this.serviceRequestRepository.save(request);
   }
+  async createExpertise(createExpertiseDto: CreateExpertiseDto) {
+    const expertise = this.expertiseRepository.create(
+        createExpertiseDto,
+    );
+
+        return this.expertiseRepository.save(expertise);
+    }
+
+
+    async getExpertise(engineerId: number) {
+        return this.expertiseRepository.find({
+            where: {
+                engineer_id: engineerId,
+            },
+        });
+    }
+
+
+    async deleteExpertise(id: number) {
+        return this.expertiseRepository.delete(id);
+    }
 
 }
