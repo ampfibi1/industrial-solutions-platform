@@ -12,10 +12,10 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
+import { AssignOversightDto } from "./dto/assign-oversight.dto";
 
 @Controller("admin")
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
+
 export class AdminController{
     constructor (private readonly adminService: AdminService) {}
     //practice route
@@ -68,43 +68,64 @@ export class AdminController{
     }
 
 
-  @Post('categories')
-  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-  createCategory(@Body() dto: CreateCategoryDto) {
-    return this.adminService.createCategory(dto);
-  }
+    @Post('categories')
+    @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+    createCategory(@Body() dto: CreateCategoryDto) {
+      return this.adminService.createCategory(dto);
+    }
 
-  @Get('categories')
-  findAllCategories() {
-    return this.adminService.findAllCategories();
-  }
+    @Get('categories')
+    findAllCategories() {
+      return this.adminService.findAllCategories();
+    }
 
 
-  @Post('products')
-  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-  createProduct(@Body() dto: CreateProductDto, @Req() req: Request & { user?: any }) {
-    const createdById = req.user?.id;
-    return this.adminService.createProduct(dto, createdById);
-  }
+    @Post('products')
+    @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+    createProduct(@Body() dto: CreateProductDto, @Req() req: Request & { user?: any }) {
+      const createdById = req.user?.id;
+      return this.adminService.createProduct(dto, createdById);
+    }
 
-  @Get('products')
-  findAllProducts() {
-    return this.adminService.findAllProducts();
-  }
+    @Get('products')
+    findAllProducts() {
+      return this.adminService.findAllProducts();
+    }
 
-  @Get('products/:id')
-  findOneProduct(@Param('id', ParseIntPipe) id: number) {
-    return this.adminService.findOneProduct(id);
-  }
+    @Get('products/:id')
+    findOneProduct(@Param('id', ParseIntPipe) id: number) {
+      return this.adminService.findOneProduct(id);
+    }
 
-  @Put('products/:id')
-  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-  updateProduct(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
-    return this.adminService.updateProduct(id, dto);
-  }
+    @Put('products/:id')
+    @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+    updateProduct(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
+      return this.adminService.updateProduct(id, dto);
+    }
 
-  @Delete('products/:id')
-  removeProduct(@Param('id', ParseIntPipe) id: number) {
-    return this.adminService.removeProduct(id);
-  }  
-}
+    @Delete('products/:id')
+    removeProduct(@Param('id', ParseIntPipe) id: number) {
+      return this.adminService.removeProduct(id);
+    }  
+
+    @Post('oversight')
+    @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+    assignOversight(@Body() dto: AssignOversightDto) {
+      return this.adminService.assignOversight(dto);
+    }
+
+    @Get('oversight/company/:companyId')
+    findOversightByCompany(@Param('companyId', ParseIntPipe) companyId: number) {
+      return this.adminService.findOversightByCompany(companyId);
+    }
+
+    @Delete('oversight/:id')
+    removeOversight(@Param('id', ParseIntPipe) id: number) {
+      return this.adminService.removeOversight(id);
+    }
+
+    @Get("findUserByComp/:companyId")
+    findByCompany(@Param('companyId', ParseIntPipe) companyId: number){
+      return this.adminService.findByCompany(companyId);
+    }
+} 

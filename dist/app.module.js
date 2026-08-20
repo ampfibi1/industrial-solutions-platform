@@ -20,6 +20,7 @@ const product_entity_1 = require("./admin/entities/product.entity");
 const task3_model_1 = require("./admin/task3/task3.model");
 const mailer_1 = require("@nestjs-modules/mailer");
 const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,6 +28,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot({ isGlobal: true }),
+            auth_module_1.AuthModule,
             admin_model_1.AdminModule, task3_model_1.Task3Module,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
