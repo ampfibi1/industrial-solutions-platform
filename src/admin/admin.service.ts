@@ -91,6 +91,7 @@ export class AdminService{
       return this.companyRepo.save(company);
     }
 
+    
     async findAllUser(): Promise<User[]>{
         return this.userRepo.find({relations:{company:true}});
     }
@@ -138,112 +139,120 @@ export class AdminService{
       return this.categoryRepo.find();
     }
 
-  async createProduct(dto: CreateProductDto, createdById: number): Promise<Product> {
-    const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
-    if (!category)throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
-
-    const createdBy = await this.userRepo.findOne({ where: { id: createdById } });
-    if (!createdBy) {
-      throw new HttpException(
-        { status: HttpStatus.FORBIDDEN, error: 'Creating user could not be identified' },
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    const existingSku = await this.productRepo.findOne({ where: { sku: dto.sku } });
-    if (existingSku) throw new ConflictException(`SKU '${dto.sku}' already exists`);   
-
-    const product = this.productRepo.create({
-                sku: dto.sku,name: dto.name,description: dto.description,
-                price: dto.price,stock: dto.stock ?? 0,category,createdBy
-              });
-    return this.productRepo.save(product);
-  }
-
-  async findAllProducts(): Promise<Product[]> {
-    return this.productRepo.find({ relations: {category:true, createdBy:true} });
-  }
-
-  async findOneProduct(id: number): Promise<Product> {
-    const product = await this.productRepo.findOne({where: { id },relations: {category:true, createdBy:true}});
-    if (!product) throw new NotFoundException(`Product with id ${id} not found`);
-    return product;
-  }
-
-  async updateProduct(id: number, dto: UpdateProductDto): Promise<Product> {
-    const product = await this.findOneProduct(id);
-
-    if (dto.categoryId !== undefined) {
+    async createProduct(dto: CreateProductDto, createdById: number): Promise<Product> {
       const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
-      if (!category) throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
-      
-      product.category = category;
+      if (!category)throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
+
+      const createdBy = await this.userRepo.findOne({ where: { id: createdById } });
+      if (!createdBy) {
+        throw new HttpException(
+          { status: HttpStatus.FORBIDDEN, error: 'Creating user could not be identified' },
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      const existingSku = await this.productRepo.findOne({ where: { sku: dto.sku } });
+      if (existingSku) throw new ConflictException(`SKU '${dto.sku}' already exists`);   
+
+      const product = this.productRepo.create({
+                  sku: dto.sku,name: dto.name,description: dto.description,
+                  price: dto.price,stock: dto.stock ?? 0,category,createdBy
+                });
+      return this.productRepo.save(product);
     }
 
-    Object.assign(product, {
-      sku: dto.sku ?? product.sku,
-      name: dto.name ?? product.name,
-      description: dto.description ?? product.description,
-      price: dto.price ?? product.price,
-      stock: dto.stock ?? product.stock,
-    });
-
-    return this.productRepo.save(product);
-  }
-
-  async removeProduct(id: number): Promise<{ deleted: boolean }> {
-    const result = await this.productRepo.delete(id);
-    if (result.affected === 0)throw new NotFoundException(`Product with id ${id} not found`);
-    return { deleted: true };
-  }   
-
-  async assignOversight(dto: AssignOversightDto): Promise<AdminCompanyOversight> {
-    const admin = await this.userRepo.findOne({ where: { id: dto.adminId } });
-    if (!admin) throw new NotFoundException(`Admin with id ${dto.adminId} not found`);
-    
-    if (admin.role !== Role.ADMIN) {
-      throw new HttpException(
-        { status: HttpStatus.BAD_REQUEST, error: 'Selected user is not an ADMIN' },
-        HttpStatus.BAD_REQUEST,
-      );
+    async findAllProducts(): Promise<Product[]> {
+      return this.productRepo.find({ relations: {category:true, createdBy:true} });
     }
 
-    const company = await this.companyRepo.findOne({ where: { id: dto.companyId } });
-    if (!company) throw new NotFoundException(`Company with id ${dto.companyId} not found`);
-    
+    async findOneProduct(id: number): Promise<Product> {
+      const product = await this.productRepo.findOne({where: { id },relations: {category:true, createdBy:true}});
+      if (!product) throw new NotFoundException(`Product with id ${id} not found`);
+      return product;
+    }
 
-    const alreadyAssigned = await this.oversightRepo.findOne({where: { admin: { id: dto.adminId }, 
-                          company: { id: dto.companyId } },relations: {admin:true,company:true}});
-    if (alreadyAssigned) throw new ConflictException('This admin is already assigned to this company');
-    
+    async updateProduct(id: number, dto: UpdateProductDto): Promise<Product> {
+      const product = await this.findOneProduct(id);
 
-    const oversight = this.oversightRepo.create({ admin, company });
-    const saved = await this.oversightRepo.save(oversight);
+      if (dto.categoryId !== undefined) {
+        const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
+        if (!category) throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
 
-    try {
-      await this.mailerService.sendMail({
-        to: admin.email,
-        subject: 'New company assignment',
-        text: `Hi ${admin.name}, you have been assigned oversight of ${company.name}.`,
+        product.category = category;
+      }
+
+      Object.assign(product, {
+        sku: dto.sku ?? product.sku,
+        name: dto.name ?? product.name,
+        description: dto.description ?? product.description,
+        price: dto.price ?? product.price,
+        stock: dto.stock ?? product.stock,
       });
-    } catch (err) {
-      console.error('Failed to send oversight assignment email:', err);
+
+      return this.productRepo.save(product);
     }
 
-    return saved;
-  }
+    async removeProduct(id: number): Promise<{ deleted: boolean }> {
+      const result = await this.productRepo.delete(id);
+      if (result.affected === 0)throw new NotFoundException(`Product with id ${id} not found`);
+      return { deleted: true };
+    }   
 
-  async findOversightByCompany(companyId: number): Promise<AdminCompanyOversight[]> {
-    const company = await this.companyRepo.findOne({ where: { id: companyId } });
-    if (!company)throw new NotFoundException(`Company with id ${companyId} not found`);
-    
-    return this.oversightRepo.find({where: { company: { id: companyId } },
-                                    relations: {admin:true,company:true}});
-  }
+    async assignOversight(dto: AssignOversightDto): Promise<AdminCompanyOversight> {
+      const admin = await this.userRepo.findOne({ where: { id: dto.adminId } });
+      if (!admin) throw new NotFoundException(`Admin with id ${dto.adminId} not found`);
 
-  async removeOversight(id: number): Promise<{ deleted: boolean }> {
-    const result = await this.oversightRepo.delete(id);
-    throw new NotFoundException(`Oversight assignment with id ${id} not found`);
-    return { deleted: true };
-  }
-}
+      if (admin.role !== Role.ADMIN) {
+        throw new HttpException(
+          { status: HttpStatus.BAD_REQUEST, error: 'Selected user is not an ADMIN' },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const company = await this.companyRepo.findOne({ where: { id: dto.companyId } });
+      if (!company) throw new NotFoundException(`Company with id ${dto.companyId} not found`);
+
+
+      const alreadyAssigned = await this.oversightRepo.findOne({where: { admin: { id: dto.adminId }, 
+                            company: { id: dto.companyId } },relations: {admin:true,company:true}});
+      if (alreadyAssigned) throw new ConflictException('This admin is already assigned to this company');
+      
+
+      const oversight = this.oversightRepo.create({ admin, company });
+      const saved = await this.oversightRepo.save(oversight);
+
+      try {
+        await this.mailerService.sendMail({
+          to: admin.email,
+          subject: 'New company assignment',
+          text: `Hi ${admin.name}, you have been assigned oversight of ${company.name}.`,
+        });
+      } catch (err) {
+        console.error('Failed to send oversight assignment email:', err);
+      }
+
+      return saved;
+    }
+
+    async findOversightByCompany(companyId: number): Promise<AdminCompanyOversight[]> {
+      const company = await this.companyRepo.findOne({ where: { id: companyId } });
+      if (!company)throw new NotFoundException(`Company with id ${companyId} not found`);
+
+      return this.oversightRepo.find({where: { company: { id: companyId } },
+                                      relations: {admin:true,company:true}});
+    }
+    async removeOversight(id: number): Promise<{ deleted: boolean }> {
+      const result = await this.oversightRepo.delete(id);
+      throw new NotFoundException(`Oversight assignment with id ${id} not found`);
+      return { deleted: true };
+    }
+
+    async findByCompany(companyId: number) : Promise<User[]>{
+      const company = await this.companyRepo.findOne({ where: { id: companyId } });
+      if (!company) throw new NotFoundException(`Company with id ${companyId} not found`);
+
+      var onlyUser = this.userRepo.find({select:{id:true,name:true,email:true},where:{company:{ id: companyId }, role: Role.ADMIN},relations:{company:true}})
+
+      return onlyUser ; 
+   }
+} 

@@ -12,10 +12,12 @@ import { Task3Module } from './admin/task3/task3.model';
 import { UserInfo } from './admin/task3/entities/userinfo.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
+    AuthModule,
     AdminModule,Task3Module,
     TypeOrmModule.forRoot({
       type: 'postgres',
