@@ -1,10 +1,6 @@
-type AdminDashboardProps = {
-  id: string;
-};
+type AdminDashboardProps = {id: string;};
 
-export default function AdminDashboard({
-  id,
-}: AdminDashboardProps) {
+export default function AdminDashboard({id}: AdminDashboardProps) {
   return (
     <div>
       <h1>Admin Dashboard</h1>
