@@ -2,6 +2,10 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 
 export default function Home() {
+
+  /*tamjid Notes : 
+  when i register a user data save in database but a notification show that email already exist 
+  */
   return (
     <>
       <Header />
