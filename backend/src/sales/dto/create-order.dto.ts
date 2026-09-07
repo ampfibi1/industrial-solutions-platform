@@ -32,7 +32,7 @@ export class CreateOrderDto {
   customer_id: number;
 
   @IsArray()
-  @ValidateNested({ each: true })
+  @ValidateNested({ each: true }) //I am Salesmanager
   @Type(() => CreateOrderItemDto)
   items: CreateOrderItemDto[];
 }
