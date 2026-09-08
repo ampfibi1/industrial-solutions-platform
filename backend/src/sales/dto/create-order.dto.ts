@@ -12,27 +12,27 @@ export class CreateOrderItemDto {
 
   @IsNotEmpty()
   @IsInt()
-  product_id: number;
+  product_id!: number;
 
   @IsNotEmpty()
   @IsInt()
   @IsPositive({ message: 'Quantity must be greater than 0.' })
-  quantity: number;
+  quantity!: number;
 
   @IsNotEmpty()
   @IsNumber()
   @IsPositive({ message: 'Unit price must be greater than 0.' })
-  unit_price: number;
+  unit_price!: number;
 }
 
 export class CreateOrderDto {
 
   @IsNotEmpty()
   @IsInt()
-  customer_id: number;
+  customer_id!: number;
 
   @IsArray()
   @ValidateNested({ each: true }) //I am Salesmanager
   @Type(() => CreateOrderItemDto)
-  items: CreateOrderItemDto[];
+  items!: CreateOrderItemDto[];
 }

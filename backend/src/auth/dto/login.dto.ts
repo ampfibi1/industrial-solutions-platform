@@ -4,8 +4,8 @@ export class LoginDto {
 
   @IsNotEmpty({ message: 'Email is required.' })
   @IsEmail({}, { message: 'Invalid email format.' })
-  email: string;
+  email!: string;
 
   @IsNotEmpty({ message: 'Password is required.' })
-  password: string;
+  password!: string;
 }

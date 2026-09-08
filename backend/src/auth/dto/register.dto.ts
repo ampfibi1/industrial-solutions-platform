@@ -1,19 +1,19 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { Role } from '../../common/entities/enums/role.enum';
+import { Role } from '../../db/enums/role.enum';
 
 export class RegisterDto {
 
   @IsNotEmpty({ message: 'Name is required.' })
   @IsString()
-  name: string;
+  name!: string;
 
   @IsNotEmpty({ message: 'Email is required.' })
   @IsEmail({}, { message: 'Invalid email format.' })
-  email: string;
+  email!: string;
 
   @IsNotEmpty({ message: 'Password is required.' })
   @MinLength(6, { message: 'Password must be at least 6 characters.' })
-  password: string;
+  password!: string;
 
   @IsOptional()
   @IsString()
