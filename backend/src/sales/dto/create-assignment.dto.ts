@@ -4,6 +4,7 @@ export class CreateAssignmentDto {
 
   @IsNotEmpty()
   @IsInt()
+  customer_id!: number;
 
   @IsOptional()
   @IsString()
