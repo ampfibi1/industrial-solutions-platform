@@ -243,7 +243,9 @@ export class AdminService{
     }
     async removeOversight(id: number): Promise<{ deleted: boolean }> {
       const result = await this.oversightRepo.delete(id);
-      throw new NotFoundException(`Oversight assignment with id ${id} not found`);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Oversight assignment with id ${id} not found`);
+      }
       return { deleted: true };
     }
 
