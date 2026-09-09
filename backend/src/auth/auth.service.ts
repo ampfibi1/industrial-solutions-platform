@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from '../common/entities/user.entity';
+import { User } from '../db/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
  
@@ -67,7 +67,11 @@ export class AuthService {
     }
  
     // BCrypt — compare entered password with hashed password
-    const isMatch = await bcrypt.compare(dto.password, user.password);
+    if (!user.password) {
+      throw new HttpException('Invalid email or password.', HttpStatus.UNAUTHORIZED);
+    }
+
+    const isMatch = bcrypt.compare(dto.password, user.password);
     if (!isMatch) {
       throw new HttpException('Invalid email or password.', HttpStatus.UNAUTHORIZED);
     }
