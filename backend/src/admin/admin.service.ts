@@ -17,6 +17,7 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { AssignOversightDto } from "./dto/assign-oversight.dto";
 import { AdminCompanyOversight } from "src/db/admin-company-oversight.entity";
 import { Role } from "src/db/enums/role.enum";
+import { UpdateCompanyDto } from "./dto/update-company.dto";
 
 @Injectable()
 export class AdminService{
@@ -91,7 +92,34 @@ export class AdminService{
       return this.companyRepo.save(company);
     }
 
-    
+    async findAllCompanies(): Promise<Company[]> {
+      return this.companyRepo.find();
+    }
+
+    async findOne(id: number): Promise<Company> { 
+      const company = await this.companyRepo.findOne({ where: { id }, });
+      if (!company) { throw new NotFoundException( `Company with id ${id} not found`, ); } 
+      return company; 
+    }
+
+    async update( id: number, dto: UpdateCompanyDto, ): Promise<Company> { 
+      const company = await this.findOne(id); 
+      Object.assign(
+        company, 
+        { 
+          name: dto.name ?? company.name, 
+          gstNumber: dto.gstNumber ?? company.gstNumber, 
+          address: dto.address ?? company.address, 
+          industry: dto.industry ?? company.industry, 
+        }); 
+      return this.companyRepo.save(company); 
+    }
+
+    async remove(id: number): Promise<void> { 
+      const company = await this.findOne(id); 
+      await this.companyRepo.remove(company); 
+    }
+
     async findAllUser(): Promise<User[]>{
         return this.userRepo.find({relations:{company:true}});
     }

@@ -78,16 +78,8 @@ export default function SignUp() {
         {error && (<p className="text-sm text-red-500">{error}</p>)}
 
         <input name="name"  type="text"  placeholder="Name"  className="w-full rounded border p-2"/>
-
         <input  name="email"  type="email"  placeholder="Email"  className="w-full rounded border p-2"/>
-
-        <input
-  name="phone"
-  type="tel"
-  placeholder="Phone"
-  className="w-full rounded border p-2"
-/>
-
+        <input name="phone" type="tel" placeholder="Phone" className="w-full rounded border p-2"/>
         <input  name="password"  type="password"  placeholder="Password"  className="w-full rounded border p-2"/>
         <input  name="confirmPassword"  type="password"  placeholder="Confirm Password"  className="w-full rounded border p-2"/>
 

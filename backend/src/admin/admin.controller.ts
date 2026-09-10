@@ -13,6 +13,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../db/enums/role.enum';
 import { AssignOversightDto } from "./dto/assign-oversight.dto";
+import { UpdateCompanyDto } from "./dto/update-company.dto";
 
 @Controller("admin")
 
@@ -45,6 +46,26 @@ export class AdminController{
     async createCompany(@Body() dto: CreateCompanyDto) {
       return this.adminService.createCompany(dto);
     }
+    @Get("companies")
+    findAllCompanies() {
+      return this.adminService.findAllCompanies();
+    }
+    
+    @Get('company/:id') 
+    findOne( @Param('id', ParseIntPipe) id: number, ) { 
+      return this.adminService.findOne(id); 
+    }
+
+    @Patch('company/:id') 
+    update( @Param('id', ParseIntPipe) id: number, @Body() dto: UpdateCompanyDto, ) { 
+      return this.adminService.update(id, dto); 
+    } 
+    
+    @Delete('company/:id') 
+    remove( @Param('id', ParseIntPipe) id: number, ) { 
+      return this.adminService.remove(id); 
+    }
+
 
     @Get('users')
     findAllUsers() {

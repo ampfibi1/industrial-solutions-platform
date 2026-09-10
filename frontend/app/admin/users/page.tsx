@@ -1,7 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import api from "@/lib/api";
+import axios from "axios";
+import UsersClient from "@/components/admin/users/UsersClient";
 
 type User = {
   id: number;
@@ -15,71 +13,25 @@ type User = {
   };
 };
 
-export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function UsersPage() {
+  let users: User[] = [];
 
-  const fetchUsers = async () => {
-    try {
-      const response = await api.get("/admin/users");
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  if (loading) {
-    return <div className="p-6">Loading users...</div>;
+  try {
+    const response = await axios.get("http://localhost:3000/admin/users");
+    users = response.data;
+  } catch (err: unknown) {
+    console.error(err);
   }
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Users</h1>
-        <p className="text-muted-foreground">
-          Manage platform users
-        </p>
+        <p className="text-muted-foreground">Manage platform users</p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Role</th>
-              <th>Company</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+      <UsersClient users={users} />
 
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.phone}</td>
-                <td>{user.role}</td>
-                <td>{user.company?.name ?? "No company"}</td>
-                <td>
-                  <button className="btn btn-sm btn-error">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }

@@ -20,5 +20,5 @@ export class CreateCompanyDto {
   @IsString()
   @Length(2, 100)
   industry?: string;
-
+  
 }
