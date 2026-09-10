@@ -14,6 +14,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { MailService } from '../mailer/mail.service';
+import { OrderStatus } from 'src/db/enums/order-status.enum';
 
 @Injectable()
 export class SalesService {
@@ -82,6 +83,7 @@ export class SalesService {
       salesExecutive: salesExec,
       items,
       totalAmount: total,
+      status: OrderStatus.PENDING,
     });
 
     const savedOrder = await this.orderRepo.save(order);

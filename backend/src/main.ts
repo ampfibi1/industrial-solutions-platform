@@ -8,8 +8,9 @@ async function bootstrap() {
   // Enable global validation pipe
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-  await app.listen(3000);
-  console.log('Student Engineering Limited API running on http://localhost:3000');
+  await app.listen(process.env.APP_PORT || 4000 );
+  console.log(
+    `Backend running on http://localhost:${process.env.APP_PORT || 4000}`,
+  );
 }
 bootstrap();
-

@@ -7,40 +7,40 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from "typeorm";
-import { OrderStatus } from "./enums/order-status.enum";
-import { User } from "./user.entity";
-import { OrderItem } from "./order-item.entity";
+} from 'typeorm';
+import { OrderStatus } from './enums/order-status.enum';
+import { User } from './user.entity';
+import { OrderItem } from './order-item.entity';
 
-@Entity("orders")
+@Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn()
   id?: number;
 
   @ManyToOne(() => User, (user) => user.customerOrders, {
     nullable: false,
-    onDelete: "RESTRICT",
+    onDelete: 'RESTRICT',
   })
-  @JoinColumn({ name: "customer_id" })
+  @JoinColumn({ name: 'customer_id' })
   customer?: User;
 
   @ManyToOne(() => User, (user) => user.salesOrders, {
     nullable: false,
-    onDelete: "RESTRICT",
+    onDelete: 'RESTRICT',
   })
-  @JoinColumn({ name: "sales_exec_id" })
+  @JoinColumn({ name: 'sales_exec_id' })
   salesExecutive?: User;
 
-  @Column({ type: "enum", enum: OrderStatus })
+  @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
   status?: OrderStatus;
 
-  @Column({ name: "total_amount", type: "decimal", precision: 12, scale: 2 })
+  @Column({ name: 'total_amount', type: 'decimal', precision: 12, scale: 2 })
   totalAmount?: number;
 
-  @CreateDateColumn({ name: "created_at" })
+  @CreateDateColumn({ name: 'created_at' })
   createdAt?: Date;
 
-  @UpdateDateColumn({ name: "updated_at" })
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt?: Date;
 
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
