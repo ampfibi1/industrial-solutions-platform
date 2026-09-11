@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Request } from 'express';
 import { AdminService } from "./admin.service";
 import { AdminCat2Dto } from "./task2/adminCat2.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateCompanyDto } from "./dto/create-company.dto";
-import { CreateCategoryDto } from "./create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -14,6 +14,10 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../db/enums/role.enum';
 import { AssignOversightDto } from "./dto/assign-oversight.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
+
+import {FileInterceptor} from "@nestjs/platform-express";
+import { UploadedFile, UseInterceptors } from "@nestjs/common";
+import express from "express";
 
 @Controller("admin")
 
@@ -36,12 +40,7 @@ export class AdminController{
     @Get('mail')
     testMail(){return this.adminService.testMail();}
 
-    @Post("createUser")
-    @UsePipes(new ValidationPipe())
-    createUser(@Body() dto:CreateUserDto){
-        return this.adminService.createUser(dto);
-    }
-
+    //-----------------Companie---------------------------------------
     @Post('createCompanie')
     async createCompany(@Body() dto: CreateCompanyDto) {
       return this.adminService.createCompany(dto);
@@ -66,7 +65,18 @@ export class AdminController{
       return this.adminService.remove(id); 
     }
 
+    @Get("findUserByComp/:companyId")
+    findByCompany(@Param('companyId', ParseIntPipe) companyId: number){
+      return this.adminService.findByCompany(companyId);
+    }
 
+    //-----------------User---------------------------------------
+    @Post("createUser")
+    @UsePipes(new ValidationPipe())
+    createUser(@Body() dto:CreateUserDto){
+        return this.adminService.createUser(dto);
+    }
+    
     @Get('users')
     findAllUsers() {
       return this.adminService.findAllUser();
@@ -88,7 +98,7 @@ export class AdminController{
       return this.adminService.removeUser(id);
     }
 
-
+    //-----------------Category---------------------------------------
     @Post('categories')
     @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
     createCategory(@Body() dto: CreateCategoryDto) {
@@ -100,12 +110,18 @@ export class AdminController{
       return this.adminService.findAllCategories();
     }
 
+    @Delete("categories/:id")
+    deleteCategory(@Param("id", ParseIntPipe) id: number) {
+      return this.adminService.deleteCategory(id);
+    }
 
-    @Post('products')
+    //-----------------Products---------------------------------------
+    @Post("products")
+    @UseInterceptors(FileInterceptor("picture"))
     @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-    createProduct(@Body() dto: CreateProductDto, @Req() req: Request & { user?: any }) {
-      const createdById = req.user?.id;
-      return this.adminService.createProduct(dto, createdById);
+    createProduct(@Body() dto: CreateProductDto,@UploadedFile() picture: Express.Multer.File) {
+      const createdById = 1;
+      return this.adminService.createProduct(dto, createdById, picture);
     }
 
     @Get('products')
@@ -118,10 +134,11 @@ export class AdminController{
       return this.adminService.findOneProduct(id);
     }
 
-    @Put('products/:id')
+    @Put("products/:id")
+    @UseInterceptors(FileInterceptor("picture"))
     @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-    updateProduct(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateProductDto) {
-      return this.adminService.updateProduct(id, dto);
+    updateProduct(@Param("id", ParseIntPipe) id: number,@Body() dto: UpdateProductDto,@UploadedFile() picture: Express.Multer.File,) {
+      return this.adminService.updateProduct(id, dto, picture);
     }
 
     @Delete('products/:id')
@@ -129,6 +146,26 @@ export class AdminController{
       return this.adminService.removeProduct(id);
     }  
 
+    @Get("products/:id/picture")
+async getProductPicture(
+  @Param("id", ParseIntPipe) id: number,
+  @Res() res: express.Response,
+) {
+  const product = await this.adminService.findOneProduct(id);
+
+  if (!product.picture) {
+    throw new NotFoundException("Product picture not found");
+  }
+
+  res.set({
+    "Content-Type": product.pictureMimeType ?? "image/jpeg",
+    "Content-Length": product.picture.length,
+  });
+
+  res.end(product.picture);
+}
+
+    //-----------------Oversight---------------------------------------
     @Post('oversight')
     @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
     assignOversight(@Body() dto: AssignOversightDto) {
@@ -145,8 +182,5 @@ export class AdminController{
       return this.adminService.removeOversight(id);
     }
 
-    @Get("findUserByComp/:companyId")
-    findByCompany(@Param('companyId', ParseIntPipe) companyId: number){
-      return this.adminService.findByCompany(companyId);
-    }
+
 } 

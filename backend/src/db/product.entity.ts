@@ -34,6 +34,12 @@ export class Product {
   @Column({ default: 0 })
   stock?: number;
 
+  @Column({ type: "bytea", nullable: true })
+  picture?: Buffer;//this column is added by tamjid at 12sep2026
+
+  @Column({ nullable: true })
+  pictureMimeType?: string;//this column is added by tamjid at 12sep2026
+
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: false,
     onDelete: "RESTRICT",

@@ -57,10 +57,7 @@ export default function CreateEditUserForm({
   useEffect(() => {
     async function getCompanies() {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/admin/companies"
-        );
-
+        const response = await axios.get("http://localhost:3000/admin/companies");
         setCompanies(response.data);
       } catch (err) {
         console.error("Failed to load companies", err);
@@ -104,9 +101,7 @@ export default function CreateEditUserForm({
             phone: result.data.phone,
             role: result.data.role,
             companyId:
-              result.data.companyId === ""
-                ? null
-                : Number(result.data.companyId),
+              result.data.companyId === "" ? null : Number(result.data.companyId),
           }
         );
 
@@ -123,9 +118,7 @@ export default function CreateEditUserForm({
             password: result.data.password,
             role: result.data.role,
             companyId:
-              result.data.companyId === ""
-                ? null
-                : Number(result.data.companyId),
+              result.data.companyId === "" ? null : Number(result.data.companyId),
           }
         );
 
@@ -135,14 +128,8 @@ export default function CreateEditUserForm({
       router.refresh();
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const message =
-          err.response?.data?.message || "Request failed";
-
-        setError(
-          Array.isArray(message)
-            ? message[0]
-            : message
-        );
+        const message = err.response?.data?.message || "Request failed";
+        setError(Array.isArray(message) ? message[0] : message);
       } else {
         setError("Something went wrong. Please try again.");
       }

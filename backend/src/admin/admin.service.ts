@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateCompanyDto } from "./dto/create-company.dto";
-import { CreateCategoryDto } from "./create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 import { Category } from "src/db/category.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { Product } from "src/db/product.entity";
@@ -18,6 +18,7 @@ import { AssignOversightDto } from "./dto/assign-oversight.dto";
 import { AdminCompanyOversight } from "src/db/admin-company-oversight.entity";
 import { Role } from "src/db/enums/role.enum";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
+import type { Multer } from "multer";
 
 @Injectable()
 export class AdminService{
@@ -167,7 +168,13 @@ export class AdminService{
       return this.categoryRepo.find();
     }
 
-    async createProduct(dto: CreateProductDto, createdById: number): Promise<Product> {
+    async deleteCategory(id: number): Promise<void> {
+      const category = await this.categoryRepo.findOne({where: { id },});
+      if (!category)throw new NotFoundException("Category not found");
+      await this.categoryRepo.remove(category);
+    }
+
+    async createProduct(dto: CreateProductDto,createdById: number,picture?: Express.Multer.File): Promise<Product> {
       const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
       if (!category)throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
 
@@ -183,9 +190,18 @@ export class AdminService{
       if (existingSku) throw new ConflictException(`SKU '${dto.sku}' already exists`);   
 
       const product = this.productRepo.create({
-                  sku: dto.sku,name: dto.name,description: dto.description,
-                  price: dto.price,stock: dto.stock ?? 0,category,createdBy
-                });
+        sku: dto.sku,
+        name: dto.name,
+        description: dto.description,
+        price: dto.price,
+        stock: dto.stock ?? 0,
+        category,
+        createdBy,
+            
+        picture: picture?.buffer,
+        pictureMimeType: picture?.mimetype,
+      });
+      
       return this.productRepo.save(product);
     }
 
@@ -199,16 +215,15 @@ export class AdminService{
       return product;
     }
 
-    async updateProduct(id: number, dto: UpdateProductDto): Promise<Product> {
+    async updateProduct(  id: number,  dto: UpdateProductDto,  picture?: Express.Multer.File,): Promise<Product> {
       const product = await this.findOneProduct(id);
-
+    
       if (dto.categoryId !== undefined) {
-        const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
+        const category = await this.categoryRepo.findOne({where: { id: dto.categoryId },});
         if (!category) throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
-
         product.category = category;
       }
-
+    
       Object.assign(product, {
         sku: dto.sku ?? product.sku,
         name: dto.name ?? product.name,
@@ -216,7 +231,12 @@ export class AdminService{
         price: dto.price ?? product.price,
         stock: dto.stock ?? product.stock,
       });
-
+    
+      if (picture) {
+        product.picture = picture.buffer;
+        product.pictureMimeType = picture.mimetype;
+      }
+    
       return this.productRepo.save(product);
     }
 
