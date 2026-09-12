@@ -40,6 +40,8 @@ import {
 } from "@/components/ui/sidebar";
 
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 // -----------------------------
 // Types
@@ -60,6 +62,13 @@ type NavGroup = {
 type SidebarData = {
   navGroups: NavGroup[];
   footerGroup: NavGroup;
+};
+
+type Admin = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
 };
 
 // -----------------------------
@@ -131,26 +140,40 @@ const sidebarData: SidebarData = {
 };
 
 // -----------------------------
-// Admin Information
-// -----------------------------
-
-const admin = {
-  name: "Abdullah Al Tamjid",
-  email: "admin@gmail.com",
-};
-
-// -----------------------------
 // App Sidebar
 // -----------------------------
 
 const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
+  const [admin, setAdmin] = useState<Admin | null>(null);
+
+  useEffect(() => {
+    async function getAdminInfo() {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/admin/me",
+          {
+            withCredentials: true,
+          },
+        );
+
+        setAdmin(response.data);
+      } catch (error) {
+        console.error("Failed to load admin information:", error);
+      }
+    }
+
+    getAdminInfo();
+  }, []);
+
   return (
     <Sidebar {...props}>
       <SidebarContent>
         {sidebarData.navGroups.map((group) => (
           <SidebarGroup key={group.title}>
             {group.title && (
-              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+              <SidebarGroupLabel>
+                {group.title}
+              </SidebarGroupLabel>
             )}
 
             <SidebarGroupContent>
@@ -173,20 +196,22 @@ const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
       </SidebarContent>
 
       <SidebarFooter>
-        {/* Admin Information */}
         <div className="px-2 py-2">
-          <div className="font-medium">{admin.name}</div>
+          <div className="font-medium">
+            {admin?.name ?? "Loading..."}
+          </div>
 
           <div className="text-xs text-muted-foreground">
-            {admin.email}
+            {admin?.email ?? ""}
           </div>
         </div>
 
-        {/* Logout */}
         <SidebarMenu>
           {sidebarData.footerGroup.items.map((item) => (
             <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton render={<Link href={item.href} />}>
+              <SidebarMenuButton
+                render={<Link href={item.href} />}
+              >
                 <item.icon />
                 <span>{item.label}</span>
               </SidebarMenuButton>

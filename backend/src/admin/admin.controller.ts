@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
-import { Request } from 'express';
 import { AdminService } from "./admin.service";
 import { AdminCat2Dto } from "./task2/adminCat2.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -18,6 +17,14 @@ import { UpdateCompanyDto } from "./dto/update-company.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
 import { UploadedFile, UseInterceptors } from "@nestjs/common";
 import express from "express";
+import type { Request } from "express";
+type AuthenticatedRequest = Request & {
+  user: {
+    id: number;
+    email: string;
+    role: string;
+  };
+};
 
 @Controller("admin")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -40,6 +47,13 @@ export class AdminController{
 
     @Get('mail')
     testMail(){return this.adminService.testMail();}
+    
+    //-----------------whoami------------------------------------------
+    @Get("me")
+    getCurrentAdmin(@Req() request: AuthenticatedRequest) {
+      const userId = request.user.id;
+      return this.adminService.findOneUser(userId);
+    }
 
     //-----------------Companie---------------------------------------
     @Post('createCompanie')
