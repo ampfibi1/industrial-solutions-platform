@@ -40,13 +40,7 @@ type User = {
   };
 };
 
-export default function CreateEditUserForm({
-  user,
-  onCancel,
-}: {
-  user?: User;
-  onCancel?: () => void;
-}) {
+export default function CreateEditUserForm({user,onCancel,}: {user?: User;onCancel?: () => void;}) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -57,7 +51,7 @@ export default function CreateEditUserForm({
   useEffect(() => {
     async function getCompanies() {
       try {
-        const response = await axios.get("http://localhost:3000/admin/companies");
+        const response = await axios.get("http://localhost:3000/admin/companies",{ withCredentials: true });
         setCompanies(response.data);
       } catch (err) {
         console.error("Failed to load companies", err);
@@ -102,7 +96,8 @@ export default function CreateEditUserForm({
             role: result.data.role,
             companyId:
               result.data.companyId === "" ? null : Number(result.data.companyId),
-          }
+          },
+          { withCredentials: true }
         );
 
         alert("User updated successfully");
@@ -119,7 +114,8 @@ export default function CreateEditUserForm({
             role: result.data.role,
             companyId:
               result.data.companyId === "" ? null : Number(result.data.companyId),
-          }
+          },
+          { withCredentials: true }
         );
 
         alert("User created successfully");

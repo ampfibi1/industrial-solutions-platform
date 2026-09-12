@@ -59,7 +59,7 @@ export default function CreateProductPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/admin/categories");
+        const response = await axios.get("http://localhost:3000/admin/categories",{ withCredentials: true });
         setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -110,7 +110,7 @@ export default function CreateProductPage() {
 
       if (picture) formData.append("picture", picture);
 
-      await axios.post("http://localhost:3000/admin/products",formData);
+      await axios.post("http://localhost:3000/admin/products",formData,{ withCredentials: true });
       alert("Product created successfully");
       router.push("/admin/products");
     } catch (error) {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import UsersClient from "@/components/admin/users/UsersClient";
+import { cookies } from "next/headers";
 
 type User = {
   id: number;
@@ -17,7 +18,14 @@ export default async function UsersPage() {
   let users: User[] = [];
 
   try {
-    const response = await axios.get("http://localhost:3000/admin/users");
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("access_token")?.value;
+    
+    const response = await axios.get("http://localhost:3000/admin/users",
+      {
+        headers: {Cookie: `access_token=${accessToken}`},
+      }
+    );
     users = response.data;
   } catch (err: unknown) {
     console.error(err);

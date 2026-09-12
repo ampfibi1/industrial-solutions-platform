@@ -1,9 +1,17 @@
 import Link from "next/link";
 import ProductCard from "@/components/admin/products/card";
 import axios from "axios";
+import { cookies } from "next/headers";
 
 async function getProducts() {
-  const response = await axios.get("http://localhost:3000/admin/products");
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+    
+  const response = await axios.get("http://localhost:3000/admin/products",
+    {
+        headers: {Cookie: `access_token=${accessToken}`}
+    }
+  );
   return response.data;
 }
 

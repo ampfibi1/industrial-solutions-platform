@@ -78,9 +78,8 @@ export default function EditProductPage() {
     const fetchData = async () => {
       try {
         const [productResponse, categoryResponse] = await Promise.all([
-          axios.get(`http://localhost:3000/admin/products/${id}`),
-
-          axios.get("http://localhost:3000/admin/categories"),
+          axios.get(`http://localhost:3000/admin/products/${id}`,{ withCredentials: true }),
+          axios.get("http://localhost:3000/admin/categories",{ withCredentials: true }),
         ]);
 
         const product: Product = productResponse.data;
@@ -163,10 +162,7 @@ export default function EditProductPage() {
         formData.append("picture", picture);
       }
 
-      await axios.put(
-        `http://localhost:3000/admin/products/${id}`,
-        formData
-      );
+      await axios.put(`http://localhost:3000/admin/products/${id}`,formData,{ withCredentials: true });
 
       alert("Product updated successfully");
 
@@ -358,9 +354,7 @@ export default function EditProductPage() {
             className="btn btn-primary"
             disabled={saving}
           >
-            {saving
-              ? "Updating..."
-              : "Update Product"}
+            {saving? "Updating...": "Update Product"}
           </button>
 
           <button

@@ -41,27 +41,28 @@ export default function SignIn() {
 
     try {
       // Send login request to backend
-      const response = await axios.post("http://localhost:3000/auth/login",
+      const response = await axios.post(
+        "http://localhost:3000/auth/login",
         {
           email,
           password,
-        }
+        },
+        {
+          withCredentials: true,
+        },
       );
 
-      // Get data returned by AuthService
-      const { access_token, user } = response.data;
-
-      // Store JWT
-      localStorage.setItem("access_token", access_token);
-
-      // Store user information
+      const { user } = response.data;
       localStorage.setItem("user", JSON.stringify(user));
 
       // Redirect based on user role
-      if (user.role === "CUSTOMER") {
-        router.push(`/admin/${user.id}`);
+      if (user.role === "ADMIN") {
+        router.push(`/admin`);
+      }
+      else if (user.role === "CUSTOMER") {
+        //router.push(`/admin/${user.id}`);
       } else {
-        router.push(`/profile/${user.id}`);
+        //router.push(`/profile/${user.id}`);
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

@@ -20,7 +20,8 @@ import { UploadedFile, UseInterceptors } from "@nestjs/common";
 import express from "express";
 
 @Controller("admin")
-
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 export class AdminController{
     constructor (private readonly adminService: AdminService) {}
     //practice route
@@ -181,6 +182,4 @@ async getProductPicture(
     removeOversight(@Param('id', ParseIntPipe) id: number) {
       return this.adminService.removeOversight(id);
     }
-
-
 } 

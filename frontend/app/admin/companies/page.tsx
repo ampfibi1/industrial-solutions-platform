@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import CompanysClient from "@/components/admin/companies/CompanyClient";
+import { cookies } from "next/headers";
 
 
 type Company = {
@@ -15,7 +16,13 @@ export default async function UsersPage() {
   let companies: Company[] = [];
 
   try {
-    const response = await axios.get("http://localhost:3000/admin/companies");
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("access_token")?.value;
+    const response = await axios.get("http://localhost:3000/admin/companies",
+      {
+        headers: {Cookie: `access_token=${accessToken}`}
+      }
+    );
     companies = response.data;
   } catch (err: unknown) {
     console.error(err);

@@ -51,7 +51,8 @@ export default function CategoryManager({
         "http://localhost:3000/admin/categories",
         {
           name: result.data.name,
-        }
+        },
+        { withCredentials: true }
       );
       alert("Category created successfully");
       router.refresh();

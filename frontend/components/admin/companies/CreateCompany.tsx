@@ -64,7 +64,8 @@ export default function CreateEditCompanyForm({company,onCancel,}: {company?: Co
           gstNumber: result.data.gstNumber,
           address: result.data.address,
           industry: result.data.industry,
-        }
+        },
+        { withCredentials: true }
       );
   
       alert("Company updated successfully");
@@ -77,7 +78,8 @@ export default function CreateEditCompanyForm({company,onCancel,}: {company?: Co
             gstNumber: result.data.gstNumber,
             address: result.data.address,
             industry: result.data.industry,
-          }
+          },
+          { withCredentials: true }
         );
 
         alert("Company created successfully");

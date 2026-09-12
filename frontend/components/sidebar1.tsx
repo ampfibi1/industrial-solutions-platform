@@ -124,7 +124,7 @@ const sidebarData: SidebarData = {
       {
         label: "Logout",
         icon: LogOut,
-        href: "#",
+        href: "/",
       },
     ],
   },

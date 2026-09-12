@@ -8,7 +8,7 @@ export default function DeleteButton({id,url,name,}: {id: number;url: string;nam
 
   const handleDelete = async () => {
     try {
-      await axios.delete(url);
+      await axios.delete(url,{ withCredentials: true });
       alert(`${name} deleted successfully`);
       router.refresh();
     } catch (err: unknown) {
