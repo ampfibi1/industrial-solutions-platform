@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { z } from "zod";
 
-const signUpSchema = z.object({
+const signUpSchema = z
+  .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.email("Invalid email"),
     phone: z.string().min(11, "Phone number must be at least 11 characters"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
+    role: z.enum(["ENGINEER", "SALES_EXECUTIVE"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -38,6 +40,7 @@ export default function SignUp() {
       phone: formData.get("phone"),
       password: formData.get("password"),
       confirmPassword: formData.get("confirmPassword"),
+      role: formData.get("role")
     });
 
     if (!result.success) {
@@ -52,6 +55,7 @@ export default function SignUp() {
         email: result.data.email,
         phone: result.data.phone,
         password: result.data.password,
+        role: result.data.role
       });
 
       router.push("/auth/signin");
@@ -83,25 +87,25 @@ export default function SignUp() {
         <input  name="password"  type="password"  placeholder="Password"  className="w-full rounded border p-2"/>
         <input  name="confirmPassword"  type="password"  placeholder="Confirm Password"  className="w-full rounded border p-2"/>
 
+        <select name="role" className="w-full rounded border p-2" defaultValue="" >
+          <option value="" disabled>Select Role</option>
+          <option value="ENGINEER">Engineer</option>
+          <option value="SALES_EXECUTIVE">Sales Executive</option>
+        </select>
+
         <button  type="submit"  disabled={loading}  className="w-full rounded bg-black p-2 text-white disabled:opacity-50">
           {loading ? "Creating Account..." : "Sign Up"}
         </button>
 
         <p className="text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <Link
-            href="/auth/signin"
-            className="text-black underline"
-          >
+          <Link href="/auth/signin" className="text-black underline" >
             Sign In
           </Link>
         </p>
 
         <p className="text-center text-sm">
-          <Link
-            href="/"
-            className="text-gray-500 hover:text-black"
-          >
+          <Link href="/" className="text-gray-500 hover:text-black" >
             Back to Home
           </Link>
         </p>

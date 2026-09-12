@@ -37,7 +37,7 @@ export class AuthService {
       email: dto.email,
       phone: dto.phone,
       password: hashedPassword,
-      role: Role.CUSTOMER,
+      role: dto.role,//dto.role
     });
 
     await this.userRepo.save(user);
