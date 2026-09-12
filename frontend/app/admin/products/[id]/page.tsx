@@ -57,14 +57,9 @@ export default function ProductDetailsPage() {
   if (!product) {
     return (
       <div className="p-6">
-        <h1 className="text-xl font-bold">
-          Product not found
-        </h1>
+        <h1 className="text-xl font-bold">Product not found</h1>
 
-        <button
-          className="btn mt-4"
-          onClick={() => router.back()}
-        >
+        <button className="btn mt-4" onClick={() => router.back()} >
           Go Back
         </button>
       </div>
@@ -85,32 +80,23 @@ export default function ProductDetailsPage() {
       <div className="grid gap-8 md:grid-cols-2">
         {/* Product image */}
         <div className="rounded-lg border bg-base-200 overflow-hidden">
-  <img
-    src={`http://localhost:3000/admin/products/${product.id}/picture`}
-    alt={product.name}
-    className="w-full h-[400px] object-cover"
-    onError={(e) => {
-      e.currentTarget.src =
-        "https://cdn3d.iconscout.com/3d/premium/thumb/product-5806313-4863042.png";
-    }}
-  />
-</div>
+          <img
+            src={`http://localhost:3000/admin/products/${product.id}/picture`}
+            alt={product.name}
+            className="w-full h-[400px] object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://cdn3d.iconscout.com/3d/premium/thumb/product-5806313-4863042.png";
+            }}
+          />
+        </div>
 
         {/* Product information */}
         <div>
-          <h1 className="text-3xl font-bold">
-            {product.name}
-          </h1>
-
-          <p className="mt-2 text-base-content/60">
-            SKU: {product.sku}
-          </p>
-
+          <h1 className="text-3xl font-bold">{product.name}</h1>
+          <p className="mt-2 text-base-content/60">SKU: {product.sku}</p>
           <div className="divider" />
 
-          <p className="text-2xl font-bold">
-            ৳{product.price}
-          </p>
+          <p className="text-2xl font-bold">৳{product.price}</p>
 
           <div className="mt-4">
             <p>

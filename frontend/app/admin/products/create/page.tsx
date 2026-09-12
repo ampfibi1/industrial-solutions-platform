@@ -59,10 +59,7 @@ export default function CreateProductPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3000/admin/categories"
-        );
-
+        const response = await axios.get("http://localhost:3000/admin/categories");
         setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -91,10 +88,7 @@ export default function CreateProductPage() {
 
       result.error.issues.forEach((issue) => {
         const field = issue.path[0];
-
-        if (typeof field === "string") {
-          fieldErrors[field] = issue.message;
-        }
+        if (typeof field === "string") fieldErrors[field] = issue.message;
       });
 
       setErrors(fieldErrors);
@@ -109,34 +103,15 @@ export default function CreateProductPage() {
 
       formData.append("sku", result.data.sku);
       formData.append("name", result.data.name);
-      formData.append(
-        "description",
-        result.data.description ?? ""
-      );
-      formData.append(
-        "price",
-        result.data.price.toString()
-      );
-      formData.append(
-        "stock",
-        result.data.stock.toString()
-      );
-      formData.append(
-        "categoryId",
-        result.data.categoryId.toString()
-      );
+      formData.append("description",result.data.description ?? "");
+      formData.append("price",result.data.price.toString());
+      formData.append("stock",result.data.stock.toString());
+      formData.append("categoryId",result.data.categoryId.toString());
 
-      if (picture) {
-        formData.append("picture", picture);
-      }
+      if (picture) formData.append("picture", picture);
 
-      await axios.post(
-        "http://localhost:3000/admin/products",
-        formData
-      );
-
+      await axios.post("http://localhost:3000/admin/products",formData);
       alert("Product created successfully");
-
       router.push("/admin/products");
     } catch (error) {
       console.error("Failed to create product:", error);
@@ -148,56 +123,31 @@ export default function CreateProductPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">
-        Create Product
-      </h1>
+      <h1 className="text-2xl font-bold mb-6">Create Product</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 max-w-xl"
-      >
-        {/* SKU */}
+      <form onSubmit={handleSubmit} className="space-y-4 max-w-xl" >
         <div>
-          <label className="label">
-            SKU
-          </label>
+          <label className="label">SKU</label>
 
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            value={sku}
+          <input type="text" className="input input-bordered w-full" value={sku}
             onChange={(e) =>
               setSku(e.target.value)
             }
           />
 
-          {errors.sku && (
-            <p className="text-error text-sm mt-1">
-              {errors.sku}
-            </p>
-          )}
+          {errors.sku && (<p className="text-error text-sm mt-1">{errors.sku}</p>)}
         </div>
 
-        {/* Name */}
         <div>
-          <label className="label">
-            Product Name
-          </label>
+          <label className="label">Product Name</label>
 
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            value={name}
+          <input type="text" className="input input-bordered w-full" value={name}
             onChange={(e) =>
               setName(e.target.value)
             }
           />
 
-          {errors.name && (
-            <p className="text-error text-sm mt-1">
-              {errors.name}
-            </p>
-          )}
+          {errors.name && (<p className="text-error text-sm mt-1">{errors.name}</p>)}
         </div>
 
         {/* Description */}

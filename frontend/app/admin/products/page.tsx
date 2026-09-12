@@ -1,62 +1,20 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
-
 import ProductCard from "@/components/admin/products/card";
 import axios from "axios";
 
-type Product = {
-  id: number;
-  sku: string;
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
+async function getProducts() {
+  const response = await axios.get("http://localhost:3000/admin/products");
+  return response.data;
+}
 
-  category?: {
-    id: number;
-    name: string;
-  };
-
-  createdBy?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-};
-
-export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get("http://localhost:3000/admin/products");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  if (loading) {
-    return <div className="p-6">Loading products...</div>;
-  }
+export default async function ProductsPage() {
+  const products = await getProducts();
 
   return (
     <div className="p-6">
-      {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">
-            Products
-          </h1>
+          <h1 className="text-2xl font-bold">Products</h1>
 
           <p className="text-muted-foreground">
             Manage platform products
@@ -71,7 +29,6 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      {/* Products */}
       {products.length === 0 ? (
         <div className="rounded-lg border p-10 text-center">
           <h2 className="text-lg font-semibold">
@@ -84,7 +41,7 @@ export default function ProductsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {products.map((product) => (
+          {products.map((product: any) => (
             <ProductCard
               key={product.id}
               id={product.id}
