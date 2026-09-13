@@ -9,7 +9,9 @@ export default function NotFound() {
       <p className="mb-6 max-w-sm text-sm text-muted-foreground">
         The page you're looking for doesn't exist or may have moved.
       </p>
-      <Button render={<Link href="/dashboard" />}>Back to dashboard</Button>
+      <Button render={<Link href="/dashboard" />} nativeButton={false}>
+        Back to dashboard
+      </Button>
     </div>
   );
 }

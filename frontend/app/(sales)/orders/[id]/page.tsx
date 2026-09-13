@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getOrderById } from "@/lib/api/orders";
-import { getCookieHeader } from "@/lib/server-cookie";
+import { getServerToken } from "@/lib/server-cookie";
 import { OrderStatusBadge } from "@/components/sales/order-status-badge";
 import { DeleteOrderButton } from "@/components/sales/delete-order-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,9 +12,10 @@ export const dynamic = "force-dynamic";
 
 export default async function OrderDetailPage({ params }: { params: { id: string } }) {
   const id = Number(params.id);
+  const token = await getServerToken();
   let order;
   try {
-    order = await getOrderById(id, getCookieHeader()); // AXIOS — SSR, dynamic param
+    order = await getOrderById(id, token); // AXIOS — SSR, dynamic param
   } catch {
     notFound();
   }

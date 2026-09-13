@@ -1,14 +1,22 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  withCredentials: true, // browser attaches the httpOnly cookie automatically
   headers: { "Content-Type": "application/json" },
 });
 
 if (typeof window !== "undefined") {
+  api.interceptors.request.use((config) => {
+    const token = Cookies.get("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
   api.interceptors.response.use(
-    (res) => res,
+    (response) => response,
     (error) => {
       if (error.response?.status === 401) {
         window.location.href = "/login";
@@ -18,9 +26,6 @@ if (typeof window !== "undefined") {
   );
 }
 
-/** Server Components only: the Next.js server process doesn't share the
- *  browser's cookie jar, so the incoming request's cookies have to be
- *  read (via next/headers) and forwarded explicitly on each SSR call. */
-export function withCookie(cookieHeader?: string) {
-  return cookieHeader ? { headers: { Cookie: cookieHeader } } : undefined;
+export function withToken(token?: string) {
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
 }

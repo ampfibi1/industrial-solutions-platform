@@ -1,21 +1,25 @@
 import Link from "next/link";
 import { getOrders } from "@/lib/api/orders";
 import { getAssignments } from "@/lib/api/assignments";
-import { getCookieHeader } from "@/lib/server-cookie";
+import { getServerToken } from "@/lib/server-cookie";
 import { StatCard } from "@/components/sales/stat-card";
 import { OrderStatusBadge } from "@/components/sales/order-status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const cookieHeader = getCookieHeader();
-
-  // AXIOS CALL — SSR, forwarded httpOnly cookie
-  const orders = await getOrders(cookieHeader);
-  // AXIOS CALL — SSR, forwarded httpOnly cookie
-  const assignments = await getAssignments(cookieHeader);
+  const token = await getServerToken();
+  const orders = await getOrders(token);
+  const assignments = await getAssignments(token);
 
   const pending = orders.filter((o) => o.status === "PENDING").length;
   const revenue = orders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
@@ -32,7 +36,10 @@ export default async function DashboardPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-sm">Recent orders</CardTitle>
-          <Link href="/orders" className="text-xs text-muted-foreground hover:underline">
+          <Link
+            href="/orders"
+            className="text-xs text-muted-foreground hover:underline"
+          >
             View all
           </Link>
         </CardHeader>

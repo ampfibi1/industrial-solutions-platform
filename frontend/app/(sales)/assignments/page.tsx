@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAssignments } from "@/lib/api/assignments";
-import { getCookieHeader } from "@/lib/server-cookie";
+import { getServerToken } from "@/lib/server-cookie";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export const dynamic = "force-dynamic";
 
 export default async function AssignmentsPage() {
-  const assignments = await getAssignments(getCookieHeader()); // AXIOS — SSR
+  const token = await getServerToken();
+  const assignments = await getAssignments(token); // AXIOS — SSR
 
   return (
     <div className="space-y-4">

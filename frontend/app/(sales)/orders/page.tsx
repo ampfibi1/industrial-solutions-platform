@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { getOrders } from "@/lib/api/orders";
-import { getCookieHeader } from "@/lib/server-cookie";
+import { getServerToken } from "@/lib/server-cookie";
 import { OrderTable } from "@/components/sales/order-table";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
 export default async function OrdersPage() {
-  const orders = await getOrders(getCookieHeader()); // AXIOS — SSR
+  const token = await getServerToken();
+  const orders = await getOrders(token); // AXIOS — SSR
 
   return (
     <div className="space-y-4">
