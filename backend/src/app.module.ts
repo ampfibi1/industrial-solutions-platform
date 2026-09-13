@@ -20,11 +20,14 @@ import { UserInfo } from './admin/task3/entities/userinfo.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { EngineerModule } from './engineer/engineer.module';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
     AuthModule,
+    EngineerModule,
     AdminModule,Task3Module,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -38,6 +41,7 @@ import { AuthModule } from './auth/auth.module';
         Category,
         Company,
         CustomerAddress,
+        EngineerModule,
         EngineerProductExpertise,
         Order,
         OrderItem,
