@@ -9,7 +9,11 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateCompanyDto } from "./dto/create-company.dto";
+<<<<<<< HEAD
 import { CreateCategoryDto } from "./create-category.dto";
+=======
+import { CreateCategoryDto } from "./dto/create-category.dto";
+>>>>>>> tamjid/admin
 import { Category } from "src/db/category.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { Product } from "src/db/product.entity";
@@ -17,6 +21,11 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { AssignOversightDto } from "./dto/assign-oversight.dto";
 import { AdminCompanyOversight } from "src/db/admin-company-oversight.entity";
 import { Role } from "src/db/enums/role.enum";
+<<<<<<< HEAD
+=======
+import { UpdateCompanyDto } from "./dto/update-company.dto";
+import type { Multer } from "multer";
+>>>>>>> tamjid/admin
 
 @Injectable()
 export class AdminService{
@@ -49,6 +58,7 @@ export class AdminService{
     }
 
     //project content
+    //-------------------------------user-----------------------------------------------------------
     async createUser(dto:CreateUserDto) : Promise<User>{
         const existing = await this.userRepo.findOne({where:{ email:dto.email}});
 
@@ -83,15 +93,6 @@ export class AdminService{
         return saved;
     }
 
-    async createCompany(dto: CreateCompanyDto): Promise<Company> {
-      const existingGst = await this.companyRepo.findOne({where: { gstNumber: dto.gstNumber }});
-      if (existingGst) throw new ConflictException(`Company with GST number "${dto.gstNumber}" already exists`);
-
-      const company = this.companyRepo.create(dto);
-      return this.companyRepo.save(company);
-    }
-
-    
     async findAllUser(): Promise<User[]>{
         return this.userRepo.find({relations:{company:true}});
     }
@@ -126,7 +127,53 @@ export class AdminService{
         }
         return { deleted: true };
     }
+    //-------------------------------company-----------------------------------------------------------
+    async createCompany(dto: CreateCompanyDto): Promise<Company> {
+      const existingGst = await this.companyRepo.findOne({where: { gstNumber: dto.gstNumber }});
+      if (existingGst) throw new ConflictException(`Company with GST number "${dto.gstNumber}" already exists`);
 
+      const company = this.companyRepo.create(dto);
+      return this.companyRepo.save(company);
+    }
+
+    async findAllCompanies(): Promise<Company[]> {
+      return this.companyRepo.find();
+    }
+
+    async findOne(id: number): Promise<Company> { 
+      const company = await this.companyRepo.findOne({ where: { id }, });
+      if (!company) { throw new NotFoundException( `Company with id ${id} not found`, ); } 
+      return company; 
+    }
+
+    async update( id: number, dto: UpdateCompanyDto, ): Promise<Company> { 
+      const company = await this.findOne(id); 
+      Object.assign(
+        company, 
+        { 
+          name: dto.name ?? company.name, 
+          gstNumber: dto.gstNumber ?? company.gstNumber, 
+          address: dto.address ?? company.address, 
+          industry: dto.industry ?? company.industry, 
+        }); 
+      return this.companyRepo.save(company); 
+    }
+
+    async remove(id: number): Promise<void> { 
+      const company = await this.findOne(id); 
+      await this.companyRepo.remove(company); 
+    }
+
+    async findByCompany(companyId: number) : Promise<User[]>{
+      const company = await this.companyRepo.findOne({ where: { id: companyId } });
+      if (!company) throw new NotFoundException(`Company with id ${companyId} not found`);
+
+      var onlyUser = this.userRepo.find({select:{id:true,name:true,email:true},where:{company:{ id: companyId }, role: Role.ADMIN},relations:{company:true}})
+
+      return onlyUser ; 
+    }
+
+    //-------------------------------company-----------------------------------------------------------
     async createCategory(dto: CreateCategoryDto): Promise<Category> {
       const existing = await this.categoryRepo.findOne({ where: { name: dto.name } });
       if (existing) throw new ConflictException('Category already exists');
@@ -139,7 +186,14 @@ export class AdminService{
       return this.categoryRepo.find();
     }
 
-    async createProduct(dto: CreateProductDto, createdById: number): Promise<Product> {
+    async deleteCategory(id: number): Promise<void> {
+      const category = await this.categoryRepo.findOne({where: { id },});
+      if (!category)throw new NotFoundException("Category not found");
+      await this.categoryRepo.remove(category);
+    }
+
+    //-------------------------------company-----------------------------------------------------------
+    async createProduct(dto: CreateProductDto,createdById: number,picture?: Express.Multer.File): Promise<Product> {
       const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
       if (!category)throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
 
@@ -155,9 +209,18 @@ export class AdminService{
       if (existingSku) throw new ConflictException(`SKU '${dto.sku}' already exists`);   
 
       const product = this.productRepo.create({
-                  sku: dto.sku,name: dto.name,description: dto.description,
-                  price: dto.price,stock: dto.stock ?? 0,category,createdBy
-                });
+        sku: dto.sku,
+        name: dto.name,
+        description: dto.description,
+        price: dto.price,
+        stock: dto.stock ?? 0,
+        category,
+        createdBy,
+            
+        picture: picture?.buffer,
+        pictureMimeType: picture?.mimetype,
+      });
+      
       return this.productRepo.save(product);
     }
 
@@ -171,16 +234,15 @@ export class AdminService{
       return product;
     }
 
-    async updateProduct(id: number, dto: UpdateProductDto): Promise<Product> {
+    async updateProduct(  id: number,  dto: UpdateProductDto,  picture?: Express.Multer.File,): Promise<Product> {
       const product = await this.findOneProduct(id);
-
+    
       if (dto.categoryId !== undefined) {
-        const category = await this.categoryRepo.findOne({ where: { id: dto.categoryId } });
+        const category = await this.categoryRepo.findOne({where: { id: dto.categoryId },});
         if (!category) throw new NotFoundException(`Category with id ${dto.categoryId} not found`);
-
         product.category = category;
       }
-
+    
       Object.assign(product, {
         sku: dto.sku ?? product.sku,
         name: dto.name ?? product.name,
@@ -188,7 +250,12 @@ export class AdminService{
         price: dto.price ?? product.price,
         stock: dto.stock ?? product.stock,
       });
-
+    
+      if (picture) {
+        product.picture = picture.buffer;
+        product.pictureMimeType = picture.mimetype;
+      }
+    
       return this.productRepo.save(product);
     }
 
@@ -198,6 +265,7 @@ export class AdminService{
       return { deleted: true };
     }   
 
+    //-------------------------------company-----------------------------------------------------------
     async assignOversight(dto: AssignOversightDto): Promise<AdminCompanyOversight> {
       const admin = await this.userRepo.findOne({ where: { id: dto.adminId } });
       if (!admin) throw new NotFoundException(`Admin with id ${dto.adminId} not found`);
@@ -241,18 +309,12 @@ export class AdminService{
       return this.oversightRepo.find({where: { company: { id: companyId } },
                                       relations: {admin:true,company:true}});
     }
+
     async removeOversight(id: number): Promise<{ deleted: boolean }> {
       const result = await this.oversightRepo.delete(id);
-      throw new NotFoundException(`Oversight assignment with id ${id} not found`);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Oversight assignment with id ${id} not found`);
+      }
       return { deleted: true };
     }
-
-    async findByCompany(companyId: number) : Promise<User[]>{
-      const company = await this.companyRepo.findOne({ where: { id: companyId } });
-      if (!company) throw new NotFoundException(`Company with id ${companyId} not found`);
-
-      var onlyUser = this.userRepo.find({select:{id:true,name:true,email:true},where:{company:{ id: companyId }, role: Role.ADMIN},relations:{company:true}})
-
-      return onlyUser ; 
-   }
 } 
