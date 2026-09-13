@@ -1,16 +1,17 @@
+
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 
 import { ServiceRequest } from '../db/service-request.entity';
 import { Product } from '../db/product.entity';
 import { User } from '../db/user.entity';
 import { EngineerProductExpertise } from '../db/engineer-product-expertise.entity';
 import { ServiceStatus } from '../db/enums/service-status.enum';
-
 import { UpdateServiceStatusDto } from './dto/update-service-status.dto';
 
 @Injectable()
@@ -31,12 +32,8 @@ export class EngineerService {
 
   async getProfile(engineerId: number) {
     const engineer = await this.userRepo.findOne({
-      where: {
-        id: engineerId,
-      },
-      relations: {
-        company: true,
-      },
+      where: { id: engineerId },
+      relations: { company: true },
     });
 
     if (!engineer) {
@@ -52,9 +49,7 @@ export class EngineerService {
     phone: string,
   ) {
     const engineer = await this.userRepo.findOne({
-      where: {
-        id: engineerId,
-      },
+      where: { id: engineerId },
     });
 
     if (!engineer) {
@@ -69,12 +64,8 @@ export class EngineerService {
 
   async getServiceRequests(engineerId: number) {
     return this.serviceRequestRepo.find({
-      where: {
-        engineer: { id: engineerId },
-      },
-      relations: {
-        product: true,
-      },
+      where: { engineer: { id: engineerId } },
+      relations: { product: true },
     });
   }
 
@@ -125,6 +116,59 @@ export class EngineerService {
     return this.serviceRequestRepo.save(request);
   }
 
+  async getAvailableServiceRequests() {
+    return this.serviceRequestRepo.find({
+      where: {
+        engineer: IsNull(),
+        status: ServiceStatus.OPEN,
+      },
+      relations: {
+        product: true,
+        customer: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async applyForServiceRequest(
+    engineerId: number,
+    requestId: number,
+  ) {
+    const engineer = await this.userRepo.findOne({
+      where: { id: engineerId },
+    });
+
+    if (!engineer) {
+      throw new NotFoundException('Engineer not found');
+    }
+
+    const request = await this.serviceRequestRepo.findOne({
+      where: { id: requestId },
+    });
+
+    if (!request) {
+      throw new NotFoundException('Service request not found');
+    }
+
+    if (request.engineer) {
+      throw new ConflictException(
+        'This service request has already been assigned to an engineer',
+      );
+    }
+
+    if (request.status !== ServiceStatus.OPEN) {
+      throw new ConflictException(
+        'This service request is no longer available',
+      );
+    }
+
+    request.engineer = engineer;
+
+    return this.serviceRequestRepo.save(request);
+  }
+
   async addExpertise(
     engineerId: number,
     productId: number,
@@ -155,12 +199,8 @@ export class EngineerService {
 
   async getExpertise(engineerId: number) {
     return this.expertiseRepo.find({
-      where: {
-        engineer: { id: engineerId },
-      },
-      relations: {
-        product: true,
-      },
+      where: { engineer: { id: engineerId } },
+      relations: { product: true },
     });
   }
 

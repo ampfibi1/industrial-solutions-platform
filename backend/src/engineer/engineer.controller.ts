@@ -61,7 +61,23 @@ export class EngineerController {
 
     return this.engineerService.getServiceRequests(user.id);
   }
+    @Get('available-service-requests')
+  getAvailableServiceRequests() {
+    return this.engineerService.getAvailableServiceRequests();
+  }
 
+  @Post('service-request/:id/apply')
+  applyForServiceRequest(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+  ) {
+    const user = req.user;
+
+    return this.engineerService.applyForServiceRequest(
+      user.id,
+      Number(id),
+    );
+  }
   @Get('service-request/:id')
   getServiceRequest(
     @Req() req: AuthenticatedRequest,

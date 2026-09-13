@@ -59,8 +59,9 @@ export default function SignIn() {
       if (user.role === "ADMIN") {
         router.push(`/admin`);
       }
-      else if (user.role === "CUSTOMER") {
+      else if (user.role === "ENGINEER") {
         //router.push(`/admin/${user.id}`);
+        router.push("/engineer/dashboard")
       } else {
         //router.push(`/profile/${user.id}`);
       }
