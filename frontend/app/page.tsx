@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Image from "next/image";
 
 export default function Home() {
@@ -67,3 +68,31 @@ export default function Home() {
     </div>
   );
 }
+=======
+import Footer from "@/components/footer";
+import Header from "@/components/header";
+
+export default function Home() {
+
+  /*tamjid Notes : 
+  when i register a user data save in database but a notification show that email already exist 
+  */
+  return (
+    <>
+      <Header />
+
+      <main className="min-h-screen">
+        <section className="flex min-h-[70vh] flex-col items-center justify-center text-center px-4">
+          <h1 className="text-4xl font-bold">Industrial Solutions Platform</h1>
+
+          <p className="mt-4 max-w-xl text-gray-600">Connect businesses with reliable industrial products and solutions.</p>
+
+          <button className="mt-6 rounded-md bg-black px-6 py-3 text-white"> Get Started</button>
+        </section>
+      </main>
+
+      <Footer />
+    </>
+  );
+}
+>>>>>>> tamjid/admin

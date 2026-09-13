@@ -1,21 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+<<<<<<< HEAD
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+=======
+import cookieParser from "cookie-parser";
 
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  });
-
-  // Enable global validation pipe
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-
-  await app.listen(process.env.APP_PORT || 4000);
-  console.log(
-    `Backend running on http://localhost:${process.env.APP_PORT || 4000}`,
-  );
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors({origin: 'http://localhost:5000',credentials: true});//CORS
+  app.use(cookieParser());
+>>>>>>> tamjid/admin
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

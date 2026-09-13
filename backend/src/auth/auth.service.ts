@@ -1,94 +1,112 @@
-import {
-  Injectable,
-  HttpException,
-  HttpStatus,
-  ConflictException,
-} from '@nestjs/common';
+<<<<<<< HEAD
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+=======
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+>>>>>>> tamjid/admin
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from '../db/user.entity';
-import { RegisterDto } from './dto/register.dto';
+<<<<<<< HEAD
+import { User } from 'src/db/user.entity';
 import { LoginDto } from './dto/login.dto';
- 
+=======
+
+import { User } from 'src/db/user.entity';
+import { Role } from 'src/db/enums/role.enum';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+>>>>>>> tamjid/admin
+
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
+<<<<<<< HEAD
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
- 
-  // ── REGISTER (BCrypt hashes password) 
+
+  async login(dto: LoginDto) {
+    const user = await this.userRepo.findOne({ where: { email: dto.email } });
+    if (!user || !user.password) throw new UnauthorizedException('Invalid credentials');
+
+    const passwordMatches = await bcrypt.compare(dto.password, user.password);
+    if (!passwordMatches) throw new UnauthorizedException('Invalid credentials');
+
+    const payload = { sub: user.id, email: user.email, role: user.role };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+=======
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+
+    private readonly jwtService: JwtService,
+  ) {}
+
   async register(dto: RegisterDto) {
     // Check if email already exists
-    const existing = await this.userRepo.findOne({
+    const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
     });
-    if (existing) {
-      throw new ConflictException('Email already registered.');
+
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
     }
- 
-    // BCrypt — hash the password before saving
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(dto.password, 10);
- 
+
+    // Create customer account
     const user = this.userRepo.create({
       name: dto.name,
       email: dto.email,
-      password: hashedPassword,   // ← save hashed password
       phone: dto.phone,
-      role: dto.role,
+      password: hashedPassword,
+      role: dto.role,//dto.role
     });
- 
+
     await this.userRepo.save(user);
- 
+
     return {
-      message: 'User registered successfully.',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      message: 'Registration successful',
     };
   }
- 
-  // ── LOGIN (BCrypt compares password) 
+
   async login(dto: LoginDto) {
-    // Find user by email
     const user = await this.userRepo.findOne({
       where: { email: dto.email },
     });
- 
-    // HttpException — throw proper error if user not found
-    if (!user) {
-      throw new HttpException('Invalid email or password.', HttpStatus.UNAUTHORIZED);
-    }
- 
-    // BCrypt — compare entered password with hashed password
-    if (!user.password) {
-      throw new HttpException('Invalid email or password.', HttpStatus.UNAUTHORIZED);
+
+    if (!user || !user.password) {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isMatch = bcrypt.compare(dto.password, user.password);
-    if (!isMatch) {
-      throw new HttpException('Invalid email or password.', HttpStatus.UNAUTHORIZED);
+    const passwordMatches = await bcrypt.compare(
+      dto.password,
+      user.password,
+    );
+
+    if (!passwordMatches) {
+      throw new UnauthorizedException('Invalid credentials');
     }
- 
-    // Generate JWT token
-    const payload = { sub: user.id, email: user.email, role: user.role };
-    const token = this.jwtService.sign(payload);
- 
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
     return {
-      message: 'Login successful.',
-      access_token: token,    // ← return token to user
+      access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
       },
+>>>>>>> tamjid/admin
     };
   }
 }
