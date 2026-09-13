@@ -22,7 +22,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { EngineerModule } from './engineer/engineer.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
@@ -41,7 +40,6 @@ import { EngineerModule } from './engineer/engineer.module';
         Category,
         Company,
         CustomerAddress,
-        EngineerModule,
         EngineerProductExpertise,
         Order,
         OrderItem,
