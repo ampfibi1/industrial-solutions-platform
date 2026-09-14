@@ -33,7 +33,7 @@ export function DeleteOrderButton({ orderId }: { orderId: number }) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger render={<Button variant="destructive" size="sm" />}>
+      <AlertDialogTrigger render={<Button  className="btn btn-error btn-sm" />}>
         Delete
       </AlertDialogTrigger>
       <AlertDialogContent>

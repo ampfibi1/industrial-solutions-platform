@@ -6,11 +6,12 @@ import { Order } from '../db/order.entity';
 import { OrderItem } from '../db/order-item.entity';
 import { SalesAssignment } from '../db/sales-assignment.entity';
 import { User } from '../db/user.entity';
+import { Product } from '../db/product.entity';
 import { MailModule } from '../mailer/mail.module';  
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order, OrderItem, SalesAssignment, User]),
+    TypeOrmModule.forFeature([Order, OrderItem, SalesAssignment, User, Product]),
     MailModule,  
   ],
   controllers: [SalesController],

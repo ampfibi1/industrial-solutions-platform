@@ -20,18 +20,20 @@ import { UserInfo } from './admin/task3/entities/userinfo.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { SalesModule } from './sales/sales.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal:true}),
     AuthModule,
+    SalesModule,
     AdminModule,Task3Module,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
-      port: 5432,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
+      port: Number(process.env.DB_PORT ?? 5432),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [
         AdminCompanyOversight,

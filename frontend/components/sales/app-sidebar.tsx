@@ -40,14 +40,14 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   useEffect(() => {
     // cookie is httpOnly, so this is the only way to know who's logged in
     api
-      .get("/api/auth/me")
+      .get("/auth/me")
       .then((res) => setUser(res.data))
       .catch(() => setUser(null));
   }, []);
 
   async function handleLogout() {
-    await api.post("/api/auth/logout");
-    window.location.href = "/login";
+    await api.post("/auth/logout");
+    window.location.href = "/auth/signin";
   }
 
   return (

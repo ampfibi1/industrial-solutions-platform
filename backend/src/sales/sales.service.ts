@@ -10,6 +10,7 @@ import { Order } from '../db/order.entity';
 import { OrderItem } from '../db/order-item.entity';
 import { SalesAssignment } from '../db/sales-assignment.entity';
 import { User } from '../db/user.entity';
+import { Product } from '../db/product.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
@@ -30,6 +31,9 @@ export class SalesService {
 
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>,
 
     private readonly mailService: MailService,
   ) {}
@@ -67,6 +71,14 @@ export class SalesService {
       (sum, item) => sum + item.quantity * item.unit_price,
       0,
     );
+
+    const productIds = [...new Set(dto.items.map((item) => item.product_id))];
+    const products = await this.productRepo.findBy(productIds.map((id) => ({ id })));
+    const foundProductIds = new Set(products.map((product) => product.id));
+    const missingProductId = productIds.find((id) => !foundProductIds.has(id));
+    if (missingProductId !== undefined) {
+      throw new NotFoundException(`Product with ID ${missingProductId} not found.`);
+    }
 
     // Create order items
     const items = dto.items.map((item) =>
@@ -114,7 +126,7 @@ export class SalesService {
       relations: {                  // ← FIX 3 (object not array)
         customer: true,
         salesExecutive: true,
-        items: true,
+        items: { product: true },
       },
     });
   }
@@ -126,7 +138,7 @@ export class SalesService {
       relations: {                  // ← FIX 3
         customer: true,
         salesExecutive: true,
-        items: true,
+        items: { product: true },
       },
     });
     if (!order) {

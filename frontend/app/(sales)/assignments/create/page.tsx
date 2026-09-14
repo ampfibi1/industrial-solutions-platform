@@ -4,7 +4,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createAssignmentSchema, CreateAssignmentInput } from "@/lib/validations";
+import {
+  createAssignmentSchema,
+  CreateAssignmentFormInput,
+  CreateAssignmentInput,
+} from "@/lib/validations";
 import { createAssignment } from "@/lib/api/assignments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +17,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 export default function CreateAssignmentPage() {
   const router = useRouter();
-  const form = useForm<CreateAssignmentInput>({ resolver: zodResolver(createAssignmentSchema) });
+  const form = useForm<CreateAssignmentFormInput, unknown, CreateAssignmentInput>({
+    resolver: zodResolver(createAssignmentSchema),
+  });
 
   async function onSubmit(data: CreateAssignmentInput) {
     // AXIOS — CSR insert
@@ -39,7 +45,7 @@ export default function CreateAssignmentPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Customer ID</FormLabel>
-                    <FormControl><Input type="number" {...field} /></FormControl>
+                    <FormControl><Input type="number" {...field} value={field.value == null ? "" : String(field.value)} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

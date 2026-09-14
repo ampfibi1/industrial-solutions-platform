@@ -4,7 +4,11 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createOrderSchema, CreateOrderInput } from "@/lib/validations";
+import {
+  createOrderSchema,
+  CreateOrderFormInput,
+  CreateOrderInput,
+} from "@/lib/validations";
 import { createOrder } from "@/lib/api/orders";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,9 +24,9 @@ import {
 
 export default function CreateOrderPage() {
   const router = useRouter();
-  const form = useForm<CreateOrderInput>({
+  const form = useForm<CreateOrderFormInput, unknown, CreateOrderInput>({
     resolver: zodResolver(createOrderSchema),
-    defaultValues: { items: [{ product_id: undefined, quantity: undefined, unit_price: undefined }] },
+    defaultValues: { customer_id: "", items: [{ product_id: "", quantity: "", unit_price: "" }] },
   });
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" });
 
@@ -49,7 +53,7 @@ export default function CreateOrderPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Customer ID</FormLabel>
-                    <FormControl><Input type="number" {...field} /></FormControl>
+                    <FormControl><Input type="number" {...field} value={field.value == null ? "" : String(field.value)} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -62,7 +66,7 @@ export default function CreateOrderPage() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => append({ product_id: undefined, quantity: undefined, unit_price: undefined })}
+                    onClick={() => append({ product_id: "", quantity: "", unit_price: "" })}
                   >
                     + Add item
                   </Button>
@@ -76,7 +80,7 @@ export default function CreateOrderPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs">Product ID</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl><Input type="number" {...field} value={field.value == null ? "" : String(field.value)} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -87,7 +91,7 @@ export default function CreateOrderPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs">Quantity</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl><Input type="number" {...field} value={field.value == null ? "" : String(field.value)} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -98,7 +102,7 @@ export default function CreateOrderPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-xs">Unit price</FormLabel>
-                          <FormControl><Input type="number" step="0.01" {...field} /></FormControl>
+                          <FormControl><Input type="number" step="0.01" {...field} value={field.value == null ? "" : String(field.value)} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

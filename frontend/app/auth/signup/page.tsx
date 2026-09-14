@@ -50,7 +50,8 @@ export default function SignUp() {
     }
 
     try {
-      await axios.post("http://localhost:3000/auth/reg", {
+      console.log(process.env.NEXT_PUBLIC_API_URL);
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/reg`, {
         name: result.data.name,
         email: result.data.email,
         phone: result.data.phone,

@@ -15,7 +15,9 @@ export default async function AssignmentsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Customer assignments</h1>
-        <Button render={<Link href="/assignments/create" />}>New assignment</Button>
+        <Button nativeButton={false} render={<Link href="/assignments/create" />}>
+          New assignment
+        </Button>
       </div>
 
       <Card>

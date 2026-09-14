@@ -9,7 +9,7 @@ export interface User {
 
 export interface OrderItem {
   id: number;
-  product: { id: number };
+  product?: { id: number };
   quantity: number;
   unitPrice: number;
 }

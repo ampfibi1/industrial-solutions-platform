@@ -14,7 +14,9 @@ export default async function OrdersPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Orders</h1>
-        <Button render={<Link href="/orders/create" />}>New order</Button>
+        <Button nativeButton={false} render={<Link href="/orders/create" />}>
+          New order
+        </Button>
       </div>
       <OrderTable initialOrders={orders} />
     </div>

@@ -11,9 +11,11 @@ export const createOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, "Add at least one item."),
 });
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type CreateOrderFormInput = z.input<typeof createOrderSchema>;
 
 export const createAssignmentSchema = z.object({
   customer_id: z.coerce.number().int().positive("Select a customer."),
   region: z.string().optional(),
 });
 export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>;
+export type CreateAssignmentFormInput = z.input<typeof createAssignmentSchema>;
