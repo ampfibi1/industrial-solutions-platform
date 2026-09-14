@@ -2,6 +2,8 @@ import axios from "axios";
 import UsersClient from "@/components/admin/users/UsersClient";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 type User = {
   id: number;
   name: string;

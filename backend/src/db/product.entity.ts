@@ -34,15 +34,12 @@ export class Product {
   @Column({ default: 0 })
   stock?: number;
 
-<<<<<<< HEAD
-=======
   @Column({ type: "bytea", nullable: true })
-  picture?: Buffer;//this column is added by tamjid at 12sep2026
+  picture?: Buffer;
 
   @Column({ nullable: true })
-  pictureMimeType?: string;//this column is added by tamjid at 12sep2026
+  pictureMimeType?: string;
 
->>>>>>> tamjid/admin
   @ManyToOne(() => Category, (category) => category.products, {
     nullable: false,
     onDelete: "RESTRICT",
@@ -71,8 +68,4 @@ export class Product {
 
   @OneToMany(() => WishlistItem, (item) => item.product)
   wishlistItems?: WishlistItem[];
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> tamjid/admin

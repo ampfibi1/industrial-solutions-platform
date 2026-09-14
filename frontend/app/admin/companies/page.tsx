@@ -3,6 +3,8 @@ import axios from "axios";
 import CompanysClient from "@/components/admin/companies/CompanyClient";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 
 type Company = {
   id:number;

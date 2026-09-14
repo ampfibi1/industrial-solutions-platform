@@ -42,7 +42,7 @@ export default function SignIn() {
     try {
       // Send login request to backend
       const response = await axios.post(
-        "http://localhost:3000/auth/login",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
         {
           email,
           password,
@@ -55,14 +55,10 @@ export default function SignIn() {
       const { user } = response.data;
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect based on user role
       if (user.role === "ADMIN") {
-        router.push(`/admin`);
-      }
-      else if (user.role === "CUSTOMER") {
-        //router.push(`/admin/${user.id}`);
+        router.push("/admin");
       } else {
-        //router.push(`/profile/${user.id}`);
+        router.push("/dashboard");
       }
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

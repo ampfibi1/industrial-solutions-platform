@@ -9,11 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { MailerService } from "@nestjs-modules/mailer";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateCompanyDto } from "./dto/create-company.dto";
-<<<<<<< HEAD
-import { CreateCategoryDto } from "./create-category.dto";
-=======
 import { CreateCategoryDto } from "./dto/create-category.dto";
->>>>>>> tamjid/admin
 import { Category } from "src/db/category.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { Product } from "src/db/product.entity";
@@ -21,11 +17,7 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { AssignOversightDto } from "./dto/assign-oversight.dto";
 import { AdminCompanyOversight } from "src/db/admin-company-oversight.entity";
 import { Role } from "src/db/enums/role.enum";
-<<<<<<< HEAD
-=======
 import { UpdateCompanyDto } from "./dto/update-company.dto";
-import type { Multer } from "multer";
->>>>>>> tamjid/admin
 
 @Injectable()
 export class AdminService{
